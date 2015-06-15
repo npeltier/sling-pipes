@@ -31,9 +31,13 @@ or
   "userReader":{
     "sling:resourceType":"/apps/sling-pipes/slingQuery",
     "get":"reading user names from an mv property",
-    "write": {
-      "sling:resourceType":"/apps/sling-pipes/write",
-      "write":"prop=value chain, value using writing ${nodes.path} in the ${getUser(userReader)}'s profile"
+    "userSeek":{
+      "sling:resourceType":"/apps/sling-pipes/auth",
+      "get":"getUser from ${userReader}",
+      "write": {
+        "sling:resourceType":"/apps/sling-pipes/write",
+        "write":"prop=value chain, value using writing ${nodes.path} in the ${userSeek}'s profile"
+      }
     }
   }
 }
