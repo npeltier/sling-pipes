@@ -5,10 +5,14 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * provides generic utilities for a pipe
  */
-public abstract class AbstractPipe implements Pipe {
+public class BasePipe implements Pipe {
     protected ResourceResolver resolver;
     protected ValueMap properties;
     protected Resource resource;
@@ -27,12 +31,17 @@ public abstract class AbstractPipe implements Pipe {
     protected Plumber plumber;
     private String name;
 
-    public AbstractPipe(Plumber plumber, Resource resource) throws Exception {
+    public BasePipe(Plumber plumber, Resource resource) throws Exception {
         this.resource = resource;
         properties = resource.adaptTo(ValueMap.class);
         resolver = resource.getResourceResolver();
         this.plumber = plumber;
         name = properties.get(PN_NAME, resource.getName());
+    }
+
+    @Override
+    public boolean modifiesContent() {
+        return false;
     }
 
     public String getName(){
@@ -63,30 +72,48 @@ public abstract class AbstractPipe implements Pipe {
         return rawPath;
     }
 
-    public Resource getRootResource() {
+    @Override
+    public Resource getConfiguredResource() {
         Resource resource = null;
         String path = getPath();
-        if (StringUtils.isBlank(path) && parent != null){
-            //in that case, we try to take the previous pipe (if any)'s resource
-            Pipe previousPipe = parent.getPreviousPipe(this);
-            if (previousPipe != null) {
-                resource = previousPipe.getRootResource();
-            }
-        } else {
+        if (StringUtils.isNotBlank(path)){
             resource = resolver.getResource(path);
         }
         return resource;
     }
 
     @Override
-    public Object getBindingObject() {
+    public Resource getInput() {
+        Resource resource = getConfiguredResource();
+        if (resource == null && parent != null){
+            Pipe previousPipe = parent.getPreviousPipe(this);
+            if (previousPipe != null) {
+                return parent.getExecutedResource(previousPipe.getName());
+            }
+        }
+        return resource;
+    }
+
+
+    @Override
+    public Object getOutputBinding() {
         if (parent != null){
-            Resource resource = parent.getCurrentResource(getName());
+            Resource resource = parent.getExecutedResource(getName());
             if (resource != null) {
                 return resource.adaptTo(ValueMap.class);
             }
         }
         return null;
+    }
+
+    /**
+     * default execution, just returns current resource
+     * @return
+     */
+    public Iterator<Resource> getOutput(){
+        List<Resource> resourceList = new ArrayList<>();
+        resourceList.add(getInput());
+        return resourceList.iterator();
     }
 
     /**

@@ -43,7 +43,7 @@ public class ContainerPipeTest extends AbstractPipeTest {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_DUMMYTREE);
         ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
         assertNotNull("A container pipe should be built out from the given configuration", pipe);
-        Iterator<Resource> resourceIterator = pipe.execute();
+        Iterator<Resource> resourceIterator = pipe.getOutput();
         assertTrue("There should be some results", resourceIterator.hasNext());
         Resource firstResource = resourceIterator.next();
         assertNotNull("First resource should not be null", firstResource);

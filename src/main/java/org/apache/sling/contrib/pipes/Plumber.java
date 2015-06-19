@@ -18,5 +18,5 @@ public interface Plumber {
      * @param type
      * @param pipeClass
      */
-    void registerPipe(String type, Class<? extends AbstractPipe> pipeClass);
+    void registerPipe(String type, Class<? extends BasePipe> pipeClass);
 }

@@ -1,7 +1,7 @@
 package org.apache.sling.contrib.pipes.dummies;
 
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.contrib.pipes.AbstractPipe;
+import org.apache.sling.contrib.pipes.BasePipe;
 import org.apache.sling.contrib.pipes.Plumber;
 
 import javax.jcr.Node;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 /**
  * dummy search reads its conf node children and returns them.
  */
-public class DummySearch extends AbstractPipe {
+public class DummySearch extends BasePipe {
 
     public DummySearch(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);
@@ -24,7 +24,7 @@ public class DummySearch extends AbstractPipe {
     }
 
     @Override
-    public Iterator<Resource> execute() {
+    public Iterator<Resource> getOutput() {
         try {
             NodeIterator iterator = getConfiguration().adaptTo(Node.class).getNodes();
             return new Iterator<Resource>() {

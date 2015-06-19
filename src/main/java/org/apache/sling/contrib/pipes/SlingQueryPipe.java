@@ -12,7 +12,7 @@ import java.util.Iterator;
  * this pipe uses SlingQuery to filters children (filter defined in expr property) of
  * a resource (defined in the path property)
  */
-public class SlingQueryPipe extends AbstractPipe {
+public class SlingQueryPipe extends BasePipe {
 
     public final static String RESOURCE_TYPE = "slingPipes/slingQuery";
 
@@ -25,8 +25,8 @@ public class SlingQueryPipe extends AbstractPipe {
         return false;
     }
 
-    public Iterator<Resource> execute() {
-        Resource resource = resolver.getResource(getPath());
+    public Iterator<Resource> getOutput() {
+        Resource resource = getInput();
         if (resource != null) {
             SlingQuery query = $(resource).children(getExpr());
             return query.iterator();

@@ -27,7 +27,7 @@ public class WritePipeTest extends AbstractPipeTest {
         Pipe pipe = plumber.getPipe(confResource);
         assertNotNull("pipe should be found", pipe);
         assertTrue("this pipe should be marked as content modifier", pipe.modifiesContent());
-        pipe.execute();
+        pipe.getOutput();
         context.resourceResolver().commit();
         ValueMap properties =  context.resourceResolver().getResource("/content/fruits/apple").adaptTo(ValueMap.class);
         assertTrue("There should be hasSeed set to true", properties.get("hasSeed", false));
@@ -40,7 +40,7 @@ public class WritePipeTest extends AbstractPipeTest {
         Pipe pipe = plumber.getPipe(confResource);
         assertNotNull("pipe should be found", pipe);
         assertTrue("this pipe should be marked as content modifier", pipe.modifiesContent());
-        Iterator<Resource> it = pipe.execute();
+        Iterator<Resource> it = pipe.getOutput();
         assertTrue("There should be one result", it.hasNext());
         Resource resource = it.next();
         assertNotNull("The result should not be null", resource);

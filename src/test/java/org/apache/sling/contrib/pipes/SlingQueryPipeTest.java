@@ -26,7 +26,7 @@ public class SlingQueryPipeTest extends AbstractPipeTest {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_SIMPLE);
         SlingQueryPipe pipe = (SlingQueryPipe)plumber.getPipe(resource);
         assertNotNull("A Sling query pipe should be built out from the given configuration", pipe);
-        Iterator<Resource> it = pipe.execute();
+        Iterator<Resource> it = pipe.getOutput();
         assertTrue("this pipe should have an output", it.hasNext());
     }
 }

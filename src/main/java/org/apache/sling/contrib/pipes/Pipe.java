@@ -2,7 +2,6 @@ package org.apache.sling.contrib.pipes;
 
 import org.apache.sling.api.resource.Resource;
 
-import javax.jcr.RepositoryException;
 import java.util.Iterator;
 
 /**
@@ -53,20 +52,27 @@ public interface Pipe {
     ContainerPipe getParent();
 
     /**
-     * Get the pipe's root resource
+     * Get the pipe's optional configured resource or null
      * @return
      */
-    Resource getRootResource();
+    Resource getConfiguredResource();
 
     /**
-     * returns the binding output associated with the given current resource
+     * Get pipe current's resource *before* next execution, meaning either the
+     * configured resource, either previous' pipe output resource
      * @return
      */
-    Object getBindingObject();
+    Resource getInput();
+
+    /**
+     * returns the binding output used in container pipe's expression
+     * @return
+     */
+    Object getOutputBinding();
 
     /**
      * Executes the pipe, can be contained in a parent or not
      * @return
      */
-    Iterator<Resource> execute();
+    Iterator<Resource> getOutput();
 }

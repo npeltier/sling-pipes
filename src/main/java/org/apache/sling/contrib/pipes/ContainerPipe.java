@@ -19,14 +19,14 @@ import java.util.Map;
  * This pipe executes the pipes it has in its configuration, chaining their result, and
  * modifying each contained pipe's expression with its context
  */
-public class ContainerPipe extends AbstractPipe {
+public class ContainerPipe extends BasePipe {
     private static final Logger log = LoggerFactory.getLogger(ContainerPipe.class);
 
     public static final String RESOURCE_TYPE = "slingPipes/container";
 
     Map<String, Pipe> pipes = new HashMap<>();
 
-    Map<String, Resource> executionResources = new HashMap<>();
+    Map<String, Resource> outputResources = new HashMap<>();
 
     PipeBindings pipeBindings = new PipeBindings();
 
@@ -79,7 +79,7 @@ public class ContainerPipe extends AbstractPipe {
     }
 
     @Override
-    public Iterator<Resource> execute()  {
+    public Iterator<Resource> getOutput()  {
         return new ContainerResourceIterator(this);
     }
 
@@ -89,12 +89,17 @@ public class ContainerPipe extends AbstractPipe {
      * @param resource
      */
     public void updateBindings(Pipe pipe, Resource resource) {
-        executionResources.put(pipe.getName(), resource);
-        pipeBindings.put(pipe.getName(), pipe.getBindingObject());
+        outputResources.put(pipe.getName(), resource);
+        pipeBindings.put(pipe.getName(), pipe.getOutputBinding());
     }
 
-    public Resource getCurrentResource(String name) {
-        return executionResources.get(name);
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public Resource getExecutedResource(String name) {
+        return outputResources.get(name);
     }
 
     /**
@@ -118,7 +123,7 @@ public class ContainerPipe extends AbstractPipe {
     }
 
     public Resource getOuputResource() {
-        return getCurrentResource(getLastPipe().getName());
+        return getExecutedResource(getLastPipe().getName());
     }
 
     /**
@@ -142,7 +147,7 @@ public class ContainerPipe extends AbstractPipe {
             mainPipe = containerPipe;
             iterators = new HashMap<>();
             for (Pipe pipe : mainPipe.pipeList){
-                Iterator<Resource> iterator = pipe.execute();
+                Iterator<Resource> iterator = pipe.getOutput();
                 iterators.put(pipe, iterator);
                 Resource resource = null;
                 if (iterator.hasNext()){
@@ -181,7 +186,7 @@ public class ContainerPipe extends AbstractPipe {
                         int currentIndex = mainPipe.reversePipeList.size() - mainPipe.reversePipeList.indexOf(pipe) - 1;
                         for (Pipe nextPipe : mainPipe.pipeList) {
                             if (mainPipe.pipeList.indexOf(nextPipe) > currentIndex) {
-                                Iterator<Resource> freshIterator = nextPipe.execute();
+                                Iterator<Resource> freshIterator = nextPipe.getOutput();
                                 iterators.put(nextPipe, freshIterator);
                                 Resource freshResource = null;
                                 if (freshIterator.hasNext()) {
