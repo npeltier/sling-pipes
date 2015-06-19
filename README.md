@@ -23,3 +23,5 @@ sample configurations (json notation, but it's jcr, e.g. container's conf are or
   }
 }
 ```
+
+some other samples are in https://github.com/npeltier/sling-pipes/tree/master/src/test/
