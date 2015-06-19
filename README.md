@@ -16,7 +16,7 @@ sample configurations (json notation, but it's jcr, e.g. container's conf are or
     "writeFullName": {       
         "sling:resourceType":"slingPipes/write",
         "conf": {
-            "fullName":"pipe.user.gender === 'female' ? 'Ms ' + pipe.user.fullName : 'Mr ' + pipe.user.fullName",
+            "fullName":"profile.gender === 'female' ? 'Ms ' + profile.fullName : 'Mr ' + profile.fullName",
             "generatedBy":"slingPipes"
         }
     }
