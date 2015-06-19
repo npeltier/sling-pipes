@@ -1,43 +1,24 @@
 # sling-pipes
 tool for doing extract - transform - load operations through JCR configuration
 
-sample configurations:
+sample configurations (json notation, but it's jcr, e.g. container's conf are ordered) :
 ```
 {
-  "sling:resourceType":"/apps/sling-pipes/slingQuery",
-  "get":"some SlingQuery Retrieving User Profiles From Current Repository",
-  "name":"users",
-  "remoteProps":{
-    "sling:resourceType":"/apps/sling-pipes/httpQuery",
-    "get":"some Http request retrieving information, using ${users} data",
-    "name":"remoteProps",
-    "remoteLogin":"blah",
-    "remotePwd":"pwd",
-    "write": {
-      "sling:resourceType":"/apps/sling-pipes/write",
-      "write":"prop=value chain, value using expression using ${users} and ${remoteProps}"
-    }
-  }
-}
-```
-
-or 
-
-```
-{
-  "sling:resourceType":"/apps/sling-pipes/slingQuery",
-  "get":"some SlingQuery Retrieving Nodes from repository",
-  "name":"nodes",
-  "userReader":{
-    "sling:resourceType":"/apps/sling-pipes/slingQuery",
-    "get":"reading user names from an mv property",
-    "userSeek":{
-      "sling:resourceType":"/apps/sling-pipes/auth",
-      "get":"getUser from ${userReader}",
-      "write": {
-        "sling:resourceType":"/apps/sling-pipes/write",
-        "write":"prop=value chain, value using writing ${nodes.path} in the ${userSeek}'s profile"
-      }
+  "sling:resourceType":"slingPipes/container",
+  "name":"Dummy User prefix Sample",
+  "jcr:description":"prefix all full names of profile with "Mr" or "Ms" depending on gender",
+  "conf":{
+    "profile": {
+        "sling:resourceType":"slingPipes/slingQuery",
+        "expr":"nt:unstructured#profile",
+        "path":"/home/users"
+    },
+    "writeFullName": {       
+        "sling:resourceType":"slingPipes/write",
+        "conf": {
+            "fullName":"pipe.user.gender === 'female' ? 'Ms ' + pipe.user.fullName : 'Mr ' + pipe.user.fullName",
+            "generatedBy":"slingPipes"
+        }
     }
   }
 }
