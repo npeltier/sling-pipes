@@ -28,8 +28,8 @@ public class WritePipe extends BasePipe {
 
     public WritePipe(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);
-        if (getConfiguration() == null || StringUtils.isBlank(getPath())){
-            throw new Exception("write pipe is misconfigured");
+        if (getConfiguration() == null){
+            throw new Exception("write pipe is misconfigured: it should have a configuration node");
         }
         writeMap = getConfiguration().adaptTo(ValueMap.class);
         resourceExpression = getPath();

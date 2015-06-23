@@ -55,7 +55,7 @@ public class BasePipe implements Pipe {
     public String getExpr(){
         String rawExpression = properties.get(PN_EXPR, "");
         if(parent != null) {
-            parent.instantiateExpression(rawExpression);
+            return parent.instantiateExpression(rawExpression);
         }
         return rawExpression;
     }

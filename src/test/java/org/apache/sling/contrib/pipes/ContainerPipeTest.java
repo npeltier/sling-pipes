@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class ContainerPipeTest extends AbstractPipeTest {
 
     private static final String NN_DUMMYTREE = "dummyTree";
+    private static final String NN_OTHERTREE = "otherTree";
 
     @Before
     public void setup() {
@@ -68,6 +69,26 @@ public class ContainerPipeTest extends AbstractPipeTest {
         assertEquals("fourthResource resource should be instantiated path with banana & carrot",
                 PATH_FRUITS + "/banana/isnota/carrot/andtheircolorisdifferent",
                 fourthResource.getPath());
+        assertFalse("There should be no more items", resourceIterator.hasNext());
+    }
+
+    @Test
+    public void testOtherTree() throws Exception {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_OTHERTREE);
+        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
+        Iterator<Resource> resourceIterator = pipe.getOutput();
+        assertTrue("There should be some results", resourceIterator.hasNext());
+        Resource firstResource = resourceIterator.next();
+        assertNotNull("First resource should not be null", firstResource);
+        assertEquals("First resource should be instantiated path with apple & pea",
+                PATH_FRUITS + "/apple/isnota/pea/buttheyhavesamecolor",
+                firstResource.getPath());
+        assertTrue("There should still be another item", resourceIterator.hasNext());
+        Resource secondResource = resourceIterator.next();
+        assertNotNull("Second resource should not be null", secondResource);
+        assertEquals("Second resource should be instantiated path with banana & pea",
+                PATH_FRUITS + "/banana/isnota/pea/andtheircolorisdifferent",
+                secondResource.getPath());
         assertFalse("There should be no more items", resourceIterator.hasNext());
     }
 }

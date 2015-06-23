@@ -6,6 +6,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.contrib.pipes.BasePipe;
 import org.apache.sling.contrib.pipes.ContainerPipe;
+import org.apache.sling.contrib.pipes.JsonPipe;
 import org.apache.sling.contrib.pipes.Pipe;
 import org.apache.sling.contrib.pipes.Plumber;
 import org.apache.sling.contrib.pipes.SlingQueryPipe;
@@ -33,6 +34,7 @@ public class PlumberImpl implements Plumber {
         registerPipe(ContainerPipe.RESOURCE_TYPE, ContainerPipe.class);
         registerPipe(SlingQueryPipe.RESOURCE_TYPE, SlingQueryPipe.class);
         registerPipe(WritePipe.RESOURCE_TYPE, WritePipe.class);
+        registerPipe(JsonPipe.RESOURCE_TYPE, JsonPipe.class);
     }
 
     @Override

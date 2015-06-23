@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 public class WritePipeTest extends AbstractPipeTest {
 
     public static final String NN_PIPED = "piped";
+    public static final String NN_VARIABLE_PIPED = "variablePipe";
     @Before
     public void setup() {
         super.setup();
@@ -56,5 +57,18 @@ public class WritePipeTest extends AbstractPipeTest {
         properties = resource.adaptTo(ValueMap.class);
         assertArrayEquals("Second fruit should have been correctly instantiated & patched, added to the first", new String[]{"apple","banana"}, properties.get("fruits", String[].class));
         assertArrayEquals("Fixed mv should be there", new String[]{"cabbage","carrot"}, properties.get("fixedVegetables", String[].class));
+    }
+
+    @Test
+    public void testVariablePiped() throws Exception {
+        String pipePath = PATH_PIPE + "/" + NN_VARIABLE_PIPED;
+        Resource confResource = context.resourceResolver().getResource(pipePath);
+        Pipe pipe = plumber.getPipe(confResource);
+        assertNotNull("pipe should be found", pipe);
+        Iterator<Resource> it = pipe.getOutput();
+        Resource resource = it.next();
+        assertEquals("path should be the one configured in first pipe", pipePath + "/conf/fruit/conf/apple", resource.getPath());
+        context.resourceResolver().commit();
+        assertEquals("Configured value should be written", "apple is a fruit and its color is green", resource.adaptTo(ValueMap.class).get("jcr:description", ""));
     }
 }
