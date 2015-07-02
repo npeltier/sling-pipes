@@ -8,6 +8,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.contrib.pipes.BasePipe;
 import org.apache.sling.contrib.pipes.ContainerPipe;
 import org.apache.sling.contrib.pipes.JsonPipe;
+import org.apache.sling.contrib.pipes.MVPropertyPipe;
 import org.apache.sling.contrib.pipes.Pipe;
 import org.apache.sling.contrib.pipes.Plumber;
 import org.apache.sling.contrib.pipes.SlingQueryPipe;
@@ -38,6 +39,7 @@ public class PlumberImpl implements Plumber {
         registerPipe(SlingQueryPipe.RESOURCE_TYPE, SlingQueryPipe.class);
         registerPipe(WritePipe.RESOURCE_TYPE, WritePipe.class);
         registerPipe(JsonPipe.RESOURCE_TYPE, JsonPipe.class);
+        registerPipe(MVPropertyPipe.RESOURCE_TYPE, MVPropertyPipe.class);
     }
 
     @Override

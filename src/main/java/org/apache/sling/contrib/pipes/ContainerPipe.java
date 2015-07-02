@@ -28,6 +28,8 @@ public class ContainerPipe extends BasePipe {
 
     Map<String, Resource> outputResources = new HashMap<>();
 
+    Map<String, String> pathBindings = new HashMap<>();
+
     PipeBindings pipeBindings = new PipeBindings();
 
     List<Pipe> pipeList = new ArrayList<>();
@@ -51,6 +53,9 @@ public class ContainerPipe extends BasePipe {
             }
         }
         Collections.reverse(reversePipeList);
+
+        //add path bindings where path.MyPipe will give MyPipe current resource path
+        pipeBindings.put("path", pathBindings);
     }
 
     /**
@@ -90,6 +95,7 @@ public class ContainerPipe extends BasePipe {
      */
     public void updateBindings(Pipe pipe, Resource resource) {
         outputResources.put(pipe.getName(), resource);
+        pathBindings.put(pipe.getName(), resource.getPath());
         pipeBindings.put(pipe.getName(), pipe.getOutputBinding());
     }
 

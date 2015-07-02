@@ -1,5 +1,6 @@
 {
   "jcr:primaryType":"nt:unstructured",
+  "index":["apple","banana"],
   "apple":{
     "jcr:primaryType":"nt:unstructured",
     "isnota":{

@@ -40,20 +40,29 @@ current output resource)
 * `conf` optional child node that contains addition configuration of the pipe (depending on the type)
 
 ### Container Pipe
+assemble a sequence of pipes, with its binding context pipes write to
 * `sling:resourceType` is `slingPipes/container`
-* `conf` node contains child pipes' configurations, that will be configured in the order they are found
+* `conf` node contains child pipes' configurations, that will be configured in the order they are found (note you should use sling:OrderedFolder)
 
 ### SlingQuery Pipe
+executes $(getInput()).children(expression)
 * `sling:resourceType` is `slingPipes/slingQuery`
 * `expr` mandatory property, contains slingQuery expression through which getInput()'s children will be computed to getOutput()
 
 ### Write Pipe
+writes given properties to current input
 * `sling:resourceType` is `slingPipes/slingQuery`
 * `conf` properties names and value of which will be written to the input resource, same resource will be returned  
 
 ### JsonPipe
+feeds bindings with remote json
 * `sling:resourceType` is `slingPipes/json`
 * `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput
+
+### MvPropertyPipe
+iterates through values of input MV property and write them to bindings 
+* `sling:resourceType` is `slingPipes/mv`
+* `path` should be the path of a mv property
 
 ## Making configuration dynamic with bindings
 in order to make things interesting, most of the configurations can be either constant string or javascript expressions: when a pipe 
