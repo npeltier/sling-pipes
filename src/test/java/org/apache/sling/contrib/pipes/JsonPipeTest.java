@@ -10,7 +10,7 @@ import java.util.Iterator;
 import static org.junit.Assert.*;
 
 /**
- * @todo add license & javadoc :-)
+ * testing json pipe with anonymous yahoo meteo API
  */
 public class JsonPipeTest extends AbstractPipeTest {
     public static final String CONF = "/content/json/conf/weather";

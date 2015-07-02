@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @todo add license & javadoc :-)
+ * testing container with dummy child pipes
  */
 public class ContainerPipeTest extends AbstractPipeTest {
 

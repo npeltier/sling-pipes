@@ -1,6 +1,5 @@
 package org.apache.sling.contrib.pipes;
 
-import org.apache.sling.contrib.pipes.dummies.Dummy;
 import org.apache.sling.contrib.pipes.dummies.DummySearch;
 import org.apache.sling.contrib.pipes.impl.PlumberImpl;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
@@ -9,7 +8,8 @@ import org.junit.Before;
 import org.junit.Rule;
 
 /**
- * @todo add license & javadoc :-)
+ * this abstract class for pipes implements a plumber with all registered pipes, plus some test ones, and give some paths,
+ * it also provides a testing Sling Context, with some content.
  */
 public class AbstractPipeTest {
 
@@ -25,7 +25,7 @@ public class AbstractPipeTest {
     public void setup(){
         PlumberImpl plumberImpl = new PlumberImpl();
         plumberImpl.activate();
-        plumberImpl.registerPipe("slingPipes/dummy", Dummy.class);
+        plumberImpl.registerPipe("slingPipes/dummy", BasePipe.class);
         plumberImpl.registerPipe("slingPipes/dummySearch", DummySearch.class);
         plumber = plumberImpl;
         context.load().json("/fruits.json", PATH_FRUITS);

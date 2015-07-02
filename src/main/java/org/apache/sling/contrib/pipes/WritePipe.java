@@ -1,6 +1,5 @@
 package org.apache.sling.contrib.pipes;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
