@@ -33,7 +33,8 @@ A `Plumber` osgi service is provided to help getting & executing pipes.
 ## Registered Pipes
 a pipe configuration is a jcr node, with:
 * `sling:resourceType` property, which must be a pipe type registered by the plumber 
-* `name` property, that will be used by a container pipe as an id
+* `name` property, that will be used by a container pipe as an id, and in the output bindings (default is a value map of the 
+current output resource)
 * `path` property, if configured, will override upstream's pipe output as an input.
 * `expr` property, expression through which the pipe will execute (depending on the type) 
 * `conf` optional child node that contains addition configuration of the pipe (depending on the type)
