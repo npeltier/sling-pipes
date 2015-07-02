@@ -33,7 +33,7 @@ A `Plumber` osgi service is provided to help getting & executing pipes.
 ## Registered Pipes
 a pipe configuration is a jcr node, with:
 * `sling:resourceType` property, which must be a pipe type registered by the plumber 
-* `name` property, that will be used by a container pipe as an id, and in the output bindings (default is a value map of the 
+* `name` property, that will be used by a container pipe as an id, and will be the key for the output bindings (default value being a value map of the 
 current output resource)
 * `path` property, if configured, will override upstream's pipe output as an input.
 * `expr` property, expression through which the pipe will execute (depending on the type) 
@@ -54,6 +54,14 @@ current output resource)
 ### JsonPipe
 * `sling:resourceType` is `slingPipes/json`
 * `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput
+
+## Making configuration dynamic with bindings
+in order to make things interesting, most of the configurations can be either constant string or javascript expressions: when a pipe 
+is in a container pipe, a valid js expression reusing other pipes names of the container as bindings can be used.
+Following configuration are evaluated:
+* `path`
+* `expr`
+* name/value of each property of a write pipe
 
 
 ## sample configurations 
