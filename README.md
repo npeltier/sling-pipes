@@ -70,13 +70,15 @@ retrieve authorizable resource corresponding to the id passed in epression
 * `expr` should be an authorizable id
 
 ## Making configuration dynamic with bindings
-in order to make things interesting, most of the configurations can be either constant string or javascript expressions: when a pipe 
+in order to make things interesting, most of the configurations are javascript expressions: when a pipe 
 is in a container pipe, a valid js expression reusing other pipes names of the container as bindings can be used.
 Following configuration are evaluated:
 * `path`
 * `expr`
 * name/value of each property of a write pipe
 
+you can use name of previous pipes in the pipe container, or the special binding `path`, where `path.previousPipe` 
+is the path of the current resource of previous pipe named `previousPipe 
 
 ## sample configurations 
 
@@ -151,6 +153,6 @@ some other samples are in https://github.com/npeltier/sling-pipes/tree/master/sr
 # Compatibility
 For running this tool on a sling instance you need:
 - java 8 (Nashorn is used for expression)
-- slingQuery (3.0.0)
-- oak (1.2.2)
+- slingQuery (3.0.0) (used in SlingQueryPipe)
+- oak (1.2.2) (used in AuthorizablePipe)
 
