@@ -225,6 +225,7 @@ public class ContainerPipe extends BasePipe {
 
         @Override
         public Resource next() {
+            hasNext = computedCursor && hasNext || hasNext();
             if (hasNext) {
                 computedCursor = false;
                 hasNext = false;
