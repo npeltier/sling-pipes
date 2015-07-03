@@ -1,5 +1,6 @@
 package org.apache.sling.contrib.pipes;
 
+import org.apache.sling.contrib.pipes.dummies.DummyNull;
 import org.apache.sling.contrib.pipes.dummies.DummySearch;
 import org.apache.sling.contrib.pipes.impl.PlumberImpl;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
@@ -26,6 +27,7 @@ public class AbstractPipeTest {
         PlumberImpl plumberImpl = new PlumberImpl();
         plumberImpl.activate();
         plumberImpl.registerPipe("slingPipes/dummy", BasePipe.class);
+        plumberImpl.registerPipe("slingPipes/dummyNull", DummyNull.class);
         plumberImpl.registerPipe("slingPipes/dummySearch", DummySearch.class);
         plumber = plumberImpl;
         context.load().json("/fruits.json", PATH_FRUITS);

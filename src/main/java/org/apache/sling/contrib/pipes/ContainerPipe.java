@@ -38,6 +38,8 @@ public class ContainerPipe extends BasePipe {
 
     ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 
+    public static final String PATH_BINDING = "path";
+
     public ContainerPipe(Plumber plumber, Resource resource) throws Exception{
         super(plumber, resource);
         for (Iterator<Resource> childPipeResources = getConfiguration().listChildren(); childPipeResources.hasNext();){
@@ -55,7 +57,7 @@ public class ContainerPipe extends BasePipe {
         Collections.reverse(reversePipeList);
 
         //add path bindings where path.MyPipe will give MyPipe current resource path
-        pipeBindings.put("path", pathBindings);
+        pipeBindings.put(PATH_BINDING, pathBindings);
     }
 
     /**
@@ -95,7 +97,9 @@ public class ContainerPipe extends BasePipe {
      */
     public void updateBindings(Pipe pipe, Resource resource) {
         outputResources.put(pipe.getName(), resource);
-        pathBindings.put(pipe.getName(), resource.getPath());
+        if (resource != null) {
+            pathBindings.put(pipe.getName(), resource.getPath());
+        }
         pipeBindings.put(pipe.getName(), pipe.getOutputBinding());
     }
 
@@ -124,6 +128,18 @@ public class ContainerPipe extends BasePipe {
         return null;
     }
 
+    /**
+     * Return the first pipe in the container
+     * @return
+     */
+    public Pipe getFirstPipe() {
+        return pipeList.iterator().next();
+    }
+
+    /**
+     * Return the last pipe in the container
+     * @return
+     */
     public Pipe getLastPipe() {
         return reversePipeList.iterator().next();
     }
@@ -145,65 +161,74 @@ public class ContainerPipe extends BasePipe {
         /**
          * container pipe
          */
-        ContainerPipe mainPipe;
+        ContainerPipe container;
 
-        boolean firstHit = true;
+        boolean computedCursor = false;
+        boolean hasNext = false;
+        int cursor = 0;
 
         ContainerResourceIterator(ContainerPipe containerPipe) {
-            mainPipe = containerPipe;
+            container = containerPipe;
             iterators = new HashMap<>();
-            for (Pipe pipe : mainPipe.pipeList){
-                Iterator<Resource> iterator = pipe.getOutput();
-                iterators.put(pipe, iterator);
-                Resource resource = null;
-                if (iterator.hasNext()){
-                    resource = iterator.next();
-                    mainPipe.updateBindings(pipe, resource);
-                }
-            }
+            Pipe firstPipe = container.getFirstPipe();
+            //we initialize the first iterator the only one not to be updated
+            iterators.put(firstPipe, firstPipe.getOutput());
         }
 
         /**
-         * we only return
+         * go up and down the container iterators until cursor is at 0 (first pipe) with no
+         * more resources, or at length - 1 (last pipe) with a next one
+         * @return
+         */
+        private boolean updateCursor(){
+            Pipe currentPipe = container.pipeList.get(cursor);
+            Iterator<Resource> it = iterators.get(currentPipe);
+            do {
+                // go up to at best reach the last pipe, updating iterators & bindings of the
+                // all intermediates, if an intermediate pipe is not outputing anything
+                // anymore, stop.
+                while (it.hasNext() && cursor < container.pipeList.size() - 1) {
+                    Resource resource = it.next();
+                    container.updateBindings(currentPipe, resource);
+                    //now we update the following pipe output with that new context
+                    Pipe nextPipe = container.pipeList.get(++cursor);
+                    iterators.put(nextPipe, nextPipe.getOutput());
+                    currentPipe = nextPipe;
+                    it = iterators.get(currentPipe);
+                }
+                //go down (or stay) to the first pipe having a next item
+                while (!it.hasNext() && cursor > 0) {
+                    currentPipe = container.pipeList.get(--cursor);
+                    it = iterators.get(currentPipe);
+                }
+            } while (it.hasNext() && cursor < container.pipeList.size() - 1);
+            //2 choices here:
+            // either cursor is at 0 with no resource left: end,
+            // either cursor is on last pipe with a resource left: hasNext
+            return cursor > 0;
+        }
+
+        /**
+         * we need to find the first "path" from first pipe to the last
+         * where each pipe returns something, if no "path", this pipe is
+         * done, other wise we must have updated iterators (next is allowed
+         * up to the pipe before the last), and return true
          * @return
          */
         @Override
         public boolean hasNext() {
-            for (Pipe pipe : mainPipe.pipeList){
-                if (iterators.get(pipe).hasNext()){
-                    return true;
-                }
+            if (! computedCursor) {
+                hasNext = updateCursor();
             }
-            return false;
+            return hasNext;
         }
 
         @Override
         public Resource next() {
-            if (firstHit) {
-                firstHit = false;
-                return mainPipe.getOuputResource();
-            } else {
-                for (Pipe pipe : mainPipe.reversePipeList) {
-                    Iterator<Resource> iterator = iterators.get(pipe);
-                    if (iterator.hasNext()) {
-                        //now we need to refresh all iterators from this one, that were not having any next items
-                        Resource resource = iterator.next();
-                        mainPipe.updateBindings(pipe, resource);
-                        int currentIndex = mainPipe.reversePipeList.size() - mainPipe.reversePipeList.indexOf(pipe) - 1;
-                        for (Pipe nextPipe : mainPipe.pipeList) {
-                            if (mainPipe.pipeList.indexOf(nextPipe) > currentIndex) {
-                                Iterator<Resource> freshIterator = nextPipe.getOutput();
-                                iterators.put(nextPipe, freshIterator);
-                                Resource freshResource = null;
-                                if (freshIterator.hasNext()) {
-                                    freshResource = freshIterator.next();
-                                }
-                                mainPipe.updateBindings(nextPipe, freshResource);
-                            }
-                        }
-                        return mainPipe.getOuputResource();
-                    }
-                }
+            if (hasNext) {
+                computedCursor = false;
+                hasNext = false;
+                return iterators.get(container.getLastPipe()).next();
             }
             return null;
         }

@@ -57,8 +57,8 @@ public class MVPropertyPipe extends BasePipe {
         Iterator<Value> itValue;
 
         public MVResourceIterator(Resource resource){
+            this.resource = resource;
             try {
-                this.resource = resource;
                 Property mvProperty = resource.adaptTo(Property.class);
                 if (mvProperty == null) {
                     throw new Exception("input resource " + resource.getPath() + " is supposed to be a property");
