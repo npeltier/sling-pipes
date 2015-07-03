@@ -64,6 +64,11 @@ iterates through values of input MV property and write them to bindings
 * `sling:resourceType` is `slingPipes/mv`
 * `path` should be the path of a mv property
 
+### AuthorizablePipe
+retrieve authorizable resource corresponding to the id passed in epression
+* `sling:resourceType` is `slingPipes/authorizable`
+* `expr` should be an authorizable id
+
 ## Making configuration dynamic with bindings
 in order to make things interesting, most of the configurations can be either constant string or javascript expressions: when a pipe 
 is in a container pipe, a valid js expression reusing other pipes names of the container as bindings can be used.

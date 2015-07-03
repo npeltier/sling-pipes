@@ -3,8 +3,10 @@ package org.apache.sling.contrib.pipes.impl;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.contrib.pipes.AuthorizablePipe;
 import org.apache.sling.contrib.pipes.BasePipe;
 import org.apache.sling.contrib.pipes.ContainerPipe;
 import org.apache.sling.contrib.pipes.JsonPipe;
@@ -40,6 +42,7 @@ public class PlumberImpl implements Plumber {
         registerPipe(WritePipe.RESOURCE_TYPE, WritePipe.class);
         registerPipe(JsonPipe.RESOURCE_TYPE, JsonPipe.class);
         registerPipe(MVPropertyPipe.RESOURCE_TYPE, MVPropertyPipe.class);
+        registerPipe(AuthorizablePipe.RESOURCE_TYPE, AuthorizablePipe.class);
     }
 
     @Override
