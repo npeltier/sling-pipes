@@ -57,7 +57,8 @@ writes given properties to current input
 ### JsonPipe
 feeds bindings with remote json
 * `sling:resourceType` is `slingPipes/json`
-* `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput
+* `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput.
+An empty url or a failing url will cut the pipe at that given place.
 
 ### MvPropertyPipe
 iterates through values of input MV property and write them to bindings 
@@ -82,7 +83,7 @@ is the path of the current resource of previous pipe named `previousPipe
 
 ## sample configurations 
 
-### Sling Query | write
+### slingQuery | write
 this pipe parse all profile nodes, and 
 ```
 {
@@ -106,7 +107,7 @@ this pipe parse all profile nodes, and
 }
 ```
 
-### Sling Query | MV | Authorizable | Write
+### slingQuery | mv | authorizable | write
 ```
 {
   "jcr:primaryType": "sling:Folder",
@@ -148,7 +149,6 @@ this pipe parse all profile nodes, and
   }
 ```
 some other samples are in https://github.com/npeltier/sling-pipes/tree/master/src/test/
-
 
 # Compatibility
 For running this tool on a sling instance you need:

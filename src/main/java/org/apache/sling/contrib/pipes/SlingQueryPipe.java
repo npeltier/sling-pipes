@@ -32,8 +32,8 @@ public class SlingQueryPipe extends BasePipe {
         Resource resource = getInput();
         if (resource != null) {
             String queryExpression = getExpr();
-            logger.info("[sling query]: executing $({}).children({})", resource.getPath(), queryExpression);
             SlingQuery query = $(resource).children(getExpr());
+            logger.info("[sling query]: executing $({}).children({})", resource.getPath(), queryExpression);
             return query.iterator();
         }
         return Collections.emptyIterator();

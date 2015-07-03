@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.commons.json.JSONArray;
 import org.apache.sling.commons.json.JSONObject;
@@ -17,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Pipe outputing binding related to a json stream
@@ -26,6 +29,8 @@ public class JsonPipe extends BasePipe {
     public static final String RESOURCE_TYPE = "slingPipes/json";
 
     HttpClient client;
+
+    Object binding;
 
     public JsonPipe(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);
@@ -45,36 +50,50 @@ public class JsonPipe extends BasePipe {
 
     @Override
     public Object getOutputBinding() {
+        return binding;
+    }
+
+    /**
+     * in case there is no successful retrieval of some JSON data, we cut the pipe here
+     * @return
+     */
+    public Iterator<Resource> getOutput() {
+        binding = null;
         GetMethod method = null;
         HttpState httpState = new HttpState();
         InputStream responseInputStream = null;
         try {
             String url = getExpr();
-            method = new GetMethod(url);
-            logger.debug("Executing GET {}", url);
-            int status = client.executeMethod(null,method,httpState);
-            if (status == HttpStatus.SC_OK){
-                logger.debug("200 received, streaming content");
-                responseInputStream = method.getResponseBodyAsStream();
-                StringWriter writer = new StringWriter();
-                IOUtils.copy(responseInputStream, writer, "utf-8");
-                String jsonString = writer.toString();
-                JSONTokener tokener = new JSONTokener(jsonString);
-                if (tokener.next() == '['){
-                    return new JSONArray(jsonString);
-                } else {
-                    return new JSONObject(jsonString);
+            if (StringUtils.isNotBlank(url)) {
+                method = new GetMethod(url);
+                logger.debug("Executing GET {}", url);
+                int status = client.executeMethod(null,method,httpState);
+                if (status == HttpStatus.SC_OK) {
+                    logger.debug("200 received, streaming content");
+                    responseInputStream = method.getResponseBodyAsStream();
+                    StringWriter writer = new StringWriter();
+                    IOUtils.copy(responseInputStream, writer, "utf-8");
+                    String jsonString = writer.toString();
+                    JSONTokener tokener = new JSONTokener(jsonString);
+                    if (tokener.next() == '[') {
+                        binding = new JSONArray(jsonString);
+                    } else {
+                        binding = new JSONObject(jsonString);
+                    }
                 }
             }
         }
         catch(Exception e) {
-            logger.error("unable to retrieve the data");
+            logger.error("unable to retrieve the data", e);
         } finally {
             if (method != null){
                 method.releaseConnection();
             }
             IOUtils.closeQuietly(responseInputStream);
         }
-        return null;
+        if (binding != null){
+            return super.getOutput();
+        }
+        return Collections.emptyIterator();
     }
 }
