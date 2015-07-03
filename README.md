@@ -153,6 +153,43 @@ this pipe parse all profile nodes, and
     }
   }
 ```
+
+### xpath | json | write
+this use case is for completing repository profiles with external system's data (that has an json api)
+```
+{
+  "jcr:primaryType": "nt:unstructured",
+  "jcr:description": "this pipe retrieves json info from an external system and writes them to the user profile",
+  "sling:resourceType": "slingPipes/container",
+  "conf": {
+    "jcr:primaryType": "sling:OrderedFolder",
+    "profile": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "expr": "'/jcr:root/home/users//element(profile,nt:unstructured)[@uid]'",
+      "jcr:description": "query all user profile nodes",
+      "sling:resourceType": "slingPipes/xpath"
+      },
+    "json": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "expr": "profile.uid ? 'https://my.external.system.corp.com/profiles/' + profile.uid.substr(0,2) + '/' + profile.uid + '.json' : ''",
+      "jcr:description": "retrieves json information relative to the given profile, if the uid is not found, expr is empty: the pipe will do nothing",
+      "sling:resourceType": "slingPipes/json"
+      },
+    "write": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "path": "path.profile",
+      "jcr:description": "write json information to the profile node",
+      "sling:resourceType": "slingPipes/write",
+      "conf": {
+        "jcr:primaryType": "sling:OrderedFolder",
+        "'about'": "json.opt('about')",
+        "'status'": "json.opt('status')"
+        }
+      }
+    }
+  }
+```
+
 some other samples are in https://github.com/npeltier/sling-pipes/tree/master/src/test/
 
 # Compatibility

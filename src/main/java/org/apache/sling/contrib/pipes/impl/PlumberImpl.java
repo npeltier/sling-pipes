@@ -15,6 +15,7 @@ import org.apache.sling.contrib.pipes.Pipe;
 import org.apache.sling.contrib.pipes.Plumber;
 import org.apache.sling.contrib.pipes.SlingQueryPipe;
 import org.apache.sling.contrib.pipes.WritePipe;
+import org.apache.sling.contrib.pipes.XPathPipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,7 @@ public class PlumberImpl implements Plumber {
         registerPipe(JsonPipe.RESOURCE_TYPE, JsonPipe.class);
         registerPipe(MVPropertyPipe.RESOURCE_TYPE, MVPropertyPipe.class);
         registerPipe(AuthorizablePipe.RESOURCE_TYPE, AuthorizablePipe.class);
+        registerPipe(XPathPipe.RESOURCE_TYPE, XPathPipe.class);
     }
 
     @Override
