@@ -34,7 +34,7 @@ A `Plumber` osgi service is provided to help getting & executing pipes.
 a pipe configuration is a jcr node, with:
 * `sling:resourceType` property, which must be a pipe type registered by the plumber 
 * `name` property, that will be used by a container pipe as an id, and will be the key for the output bindings (default value being a value map of the 
-current output resource)
+current output resource). Note that the node name will be used in case no name is provided.
 * `path` property, if configured, will override upstream's pipe output as an input.
 * `expr` property, expression through which the pipe will execute (depending on the type) 
 * `conf` optional child node that contains addition configuration of the pipe (depending on the type)
@@ -104,3 +104,11 @@ Following configuration are evaluated:
 ```
 
 some other samples are in https://github.com/npeltier/sling-pipes/tree/master/src/test/
+
+
+# Compatibility
+For running this tool on a sling instance you need:
+- java 8 (Nashorn is used for expression)
+- slingQuery (3.0.0)
+- oak (1.2.2)
+
