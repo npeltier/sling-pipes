@@ -8,6 +8,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.Value;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -54,7 +55,7 @@ public class MVPropertyPipe extends BasePipe {
     static class MVResourceIterator implements Iterator<Resource> {
         Resource resource;
         Value currentValue;
-        Iterator<Value> itValue;
+        Iterator<Value> itValue = Collections.emptyIterator();
 
         public MVResourceIterator(Resource resource){
             this.resource = resource;
@@ -68,13 +69,13 @@ public class MVPropertyPipe extends BasePipe {
                 }
                 itValue = Arrays.asList(mvProperty.getValues()).iterator();
             } catch (Exception e) {
-                logger.error("unable to setup mv iterator", e);
+                logger.warn("unable to setup mv iterator, will return nothing", e);
             }
         }
 
         @Override
         public boolean hasNext() {
-            return itValue != null ? itValue.hasNext() : false;
+            return itValue.hasNext();
         }
 
         public Value getCurrentValue() {
@@ -83,7 +84,7 @@ public class MVPropertyPipe extends BasePipe {
 
         @Override
         public Resource next() {
-            if (itValue != null) {
+            if (itValue.hasNext()) {
                 currentValue = itValue.next();
             }
             return resource;

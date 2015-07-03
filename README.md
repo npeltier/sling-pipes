@@ -80,7 +80,8 @@ Following configuration are evaluated:
 
 ## sample configurations 
 
-### Sling Query & write
+### Sling Query | write
+this pipe parse all profile nodes, and 
 ```
 {
   "sling:resourceType":"slingPipes/container",
@@ -89,20 +90,61 @@ Following configuration are evaluated:
   "conf":{
     "profile": {
         "sling:resourceType":"slingPipes/slingQuery",
-        "expr":"nt:unstructured#profile",
-        "path":"/home/users"
+        "expr":"'nt:unstructured#profile'",
+        "path":"'/home/users'"
     },
     "writeFullName": {       
         "sling:resourceType":"slingPipes/write",
         "conf": {
             "fullName":"profile.gender === 'female' ? 'Ms ' + profile.fullName : 'Mr ' + profile.fullName",
-            "generatedBy":"slingPipes"
+            "'generatedBy'":"'slingPipes'"
         }
     }
   }
 }
 ```
 
+### Sling Query | MV | Authorizable | Write
+```
+{
+  "jcr:primaryType": "sling:Folder",
+  "jcr:description": "move badge<->user relation ship from badge MV property to a user MV property"
+  "name": "badges",
+  "sling:resourceType": "slingPipes/container",
+  "conf": {
+    "jcr:primaryType": "sling:OrderedFolder",
+    "badge": {
+      "jcr:primaryType": "sling:Folder",
+      "jcr:description": "outputs all badge component resources",
+      "expr": "'[sling:resourceType=myApp/components/badge]'",
+      "path": "'/etc/badges/badges-admin/jcr:content'",
+      "sling:resourceType": "slingPipes/slingQuery"
+      },
+    "profile": {
+      "jcr:primaryType": "sling:Folder",
+      "jcr:description": "retrieve all user ids from a mv property",
+      "path": "path.badge + '/profiles'",
+      "sling:resourceType": "slingPipes/mv"
+      },
+    "user": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "jcr:description": "outputs user resource",
+      "expr": "profile",
+      "sling:resourceType": "slingPipes/authorizable"
+      },
+    "write": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "jcr:descritption": "patches the badge path to the badges property of the user profile"
+      "path": "path.user + '/profile'",
+      "sling:resourceType": "slingPipes/write",
+      "conf": {
+        "jcr:primaryType": "nt:unstructured",
+        "'badges'": "'+[' + path.badge + ']'"
+        }
+      }
+    }
+  }
+```
 some other samples are in https://github.com/npeltier/sling-pipes/tree/master/src/test/
 
 

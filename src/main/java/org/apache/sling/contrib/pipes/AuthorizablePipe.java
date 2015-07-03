@@ -32,11 +32,13 @@ public class AuthorizablePipe extends BasePipe {
     public Iterator<Resource> getOutput() {
         try {
             Authorizable auth = userManager.getAuthorizable(getExpr());
-            Resource resource = resolver.getResource(auth.getPath());
-            if (resource != null){
-                List<Resource> resourceList = new ArrayList<>();
-                resourceList.add(resource);
-                return resourceList.iterator();
+            if (auth != null) {
+                Resource resource = resolver.getResource(auth.getPath());
+                if (resource != null) {
+                    List<Resource> resourceList = new ArrayList<>();
+                    resourceList.add(resource);
+                    return resourceList.iterator();
+                }
             }
         } catch (Exception e){
             logger.error("unable to output authorizable based on expression", e);

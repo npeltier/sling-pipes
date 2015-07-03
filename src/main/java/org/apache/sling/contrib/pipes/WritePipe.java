@@ -47,7 +47,9 @@ public class WritePipe extends BasePipe {
                 String newValue = patch.group(1);
                 String[] actualValues = resource.adaptTo(ValueMap.class).get(key, String[].class);
                 List<String> newValues = actualValues != null ? new LinkedList<>(Arrays.asList(actualValues)) : new ArrayList<>();
-                newValues.add(newValue);
+                if (! newValues.contains(newValue)){
+                    newValues.add(newValue);
+                }
                 return newValues.toArray(new String[newValues.size()]);
             }
             Matcher multiMatcher = multi.matcher(value);
