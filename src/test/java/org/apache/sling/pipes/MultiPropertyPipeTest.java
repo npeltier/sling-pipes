@@ -29,12 +29,12 @@ import static org.junit.Assert.assertNotNull;
 /**
  * testing normal case of MV Property Pipe
  */
-public class MVPropertyPipeTest extends AbstractPipeTest {
+public class MultiPropertyPipeTest extends AbstractPipeTest {
 
     @Before
     public void setup() {
         super.setup();
-        context.load().json("/mv.json", PATH_PIPE);
+        context.load().json("/multiProperty.json", PATH_PIPE);
     }
 
     @Test

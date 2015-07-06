@@ -60,9 +60,9 @@ feeds bindings with remote json
 * `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput.
 An empty url or a failing url will cut the pipe at that given place.
 
-### MvPropertyPipe
-iterates through values of input MV property and write them to bindings 
-* `sling:resourceType` is `slingPipes/mv`
+### MultiPropertyPipe
+iterates through values of input multi value property and write them to bindings 
+* `sling:resourceType` is `slingPipes/multiProperty`
 * `path` should be the path of a mv property
 
 ### AuthorizablePipe
@@ -112,7 +112,7 @@ this pipe parse all profile nodes, and
 }
 ```
 
-### slingQuery | mv | authorizable | write
+### slingQuery | multiProperty | authorizable | write
 ```
 {
   "jcr:primaryType": "sling:Folder",
@@ -132,7 +132,7 @@ this pipe parse all profile nodes, and
       "jcr:primaryType": "sling:Folder",
       "jcr:description": "retrieve all user ids from a mv property",
       "path": "path.badge + '/profiles'",
-      "sling:resourceType": "slingPipes/mv"
+      "sling:resourceType": "slingPipes/multiProperty"
       },
     "user": {
       "jcr:primaryType": "sling:OrderedFolder",

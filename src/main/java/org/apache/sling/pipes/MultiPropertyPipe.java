@@ -31,11 +31,11 @@ import java.util.Iterator;
  * reads input MV property, outputs N times the input parent node resource, where N is the number of
  * values in the property, outputs each value in the bindings
  */
-public class MVPropertyPipe extends BasePipe {
-    private static Logger logger = LoggerFactory.getLogger(MVPropertyPipe.class);
-    public static final String RESOURCE_TYPE = "slingPipes/mv";
+public class MultiPropertyPipe extends BasePipe {
+    private static Logger logger = LoggerFactory.getLogger(MultiPropertyPipe.class);
+    public static final String RESOURCE_TYPE = "slingPipes/multiProperty";
 
-    public MVPropertyPipe(Plumber plumber, Resource resource) throws Exception {
+    public MultiPropertyPipe(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);
     }
 
