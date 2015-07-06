@@ -86,6 +86,14 @@ Following configuration are evaluated:
 you can use name of previous pipes in the pipe container, or the special binding `path`, where `path.previousPipe` 
 is the path of the current resource of previous pipe named `previousPipe 
 
+## How to execute a pipe
+for now it's possible to execute Pipes through POST command, you'll need to create a slingPipes/plumber resource,
+say `etc/pipes` and then to execute
+```
+curl -u admin:admin -F "path=/etc/pipes/mySamplePipe" http://localhost:8080/etc/pipes.json
+```
+which will return you the path of the pipes that have been through the output of the configured pipe.
+
 ## sample configurations 
 
 ### slingQuery | write
