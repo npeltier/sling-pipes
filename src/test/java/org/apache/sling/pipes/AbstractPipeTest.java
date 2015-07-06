@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sling.contrib.pipes;
+package org.apache.sling.pipes;
 
-import org.apache.sling.contrib.pipes.dummies.DummyNull;
-import org.apache.sling.contrib.pipes.dummies.DummySearch;
-import org.apache.sling.contrib.pipes.impl.PlumberImpl;
+import org.apache.sling.pipes.dummies.DummyNull;
+import org.apache.sling.pipes.dummies.DummySearch;
+import org.apache.sling.pipes.impl.PlumberImpl;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.Before;

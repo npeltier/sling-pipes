@@ -14,35 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sling.contrib.pipes;
+package org.apache.sling.pipes;
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
- * test the sling query pipe
+ * testing json pipe with anonymous yahoo meteo API
  */
-public class SlingQueryPipeTest extends AbstractPipeTest {
+public class JsonPipeTest extends AbstractPipeTest {
+    public static final String CONF = "/content/json/conf/weather";
 
     @Before
     public void setup() {
         super.setup();
-        context.load().json("/users.json", "/content/users");
-        context.load().json("/slingQuery.json", PATH_PIPE);
+        context.load().json("/json.json", "/content/json");
     }
 
     @Test
-    public void testChildren() throws Exception {
-        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_SIMPLE);
-        SlingQueryPipe pipe = (SlingQueryPipe)plumber.getPipe(resource);
-        assertNotNull("A Sling query pipe should be built out from the given configuration", pipe);
-        Iterator<Resource> it = pipe.getOutput();
-        assertTrue("this pipe should have an output", it.hasNext());
+    public void testPipedJson() throws Exception{
+        Resource resource = context.resourceResolver().getResource(CONF);
+        Pipe pipe = plumber.getPipe(resource);
+        Iterator<Resource> outputs = pipe.getOutput();
+        outputs.next();
+        Resource result = outputs.next();
+        context.resourceResolver().commit();
+        ValueMap properties = result.adaptTo(ValueMap.class);
+        assertTrue("There should be a Paris property", properties.containsKey("Paris"));
+        assertTrue("There should be a Bucharest property", properties.containsKey("Bucharest"));
     }
 }

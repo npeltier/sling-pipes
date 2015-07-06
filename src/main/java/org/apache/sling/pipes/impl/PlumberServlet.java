@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sling.contrib.pipes.impl;
+package org.apache.sling.pipes.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Reference;
@@ -24,7 +24,7 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.commons.json.io.JSONWriter;
-import org.apache.sling.contrib.pipes.Plumber;
+import org.apache.sling.pipes.Plumber;
 
 import javax.servlet.ServletException;
 import java.io.IOException;

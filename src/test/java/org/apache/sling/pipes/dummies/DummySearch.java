@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sling.contrib.pipes.dummies;
+package org.apache.sling.pipes.dummies;
 
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.contrib.pipes.BasePipe;
-import org.apache.sling.contrib.pipes.Plumber;
+import org.apache.sling.pipes.BasePipe;
+import org.apache.sling.pipes.Plumber;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;

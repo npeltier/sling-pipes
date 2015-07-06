@@ -14,24 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sling.contrib.pipes.impl;
+package org.apache.sling.pipes.impl;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.contrib.pipes.AuthorizablePipe;
-import org.apache.sling.contrib.pipes.BasePipe;
-import org.apache.sling.contrib.pipes.ContainerPipe;
-import org.apache.sling.contrib.pipes.JsonPipe;
-import org.apache.sling.contrib.pipes.MVPropertyPipe;
-import org.apache.sling.contrib.pipes.Pipe;
-import org.apache.sling.contrib.pipes.Plumber;
-import org.apache.sling.contrib.pipes.SlingQueryPipe;
-import org.apache.sling.contrib.pipes.WritePipe;
-import org.apache.sling.contrib.pipes.XPathPipe;
+import org.apache.sling.pipes.AuthorizablePipe;
+import org.apache.sling.pipes.BasePipe;
+import org.apache.sling.pipes.ContainerPipe;
+import org.apache.sling.pipes.JsonPipe;
+import org.apache.sling.pipes.MVPropertyPipe;
+import org.apache.sling.pipes.Pipe;
+import org.apache.sling.pipes.Plumber;
+import org.apache.sling.pipes.SlingQueryPipe;
+import org.apache.sling.pipes.WritePipe;
+import org.apache.sling.pipes.XPathPipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

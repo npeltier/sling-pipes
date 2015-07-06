@@ -14,39 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sling.contrib.pipes.dummies;
+package org.apache.sling.pipes;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.contrib.pipes.BasePipe;
-import org.apache.sling.contrib.pipes.Plumber;
 
+import javax.jcr.query.Query;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * this pipe has nothing in output
+ * generates output based on an xpath query (no input is considered)
  */
-public class DummyNull extends BasePipe {
-    public DummyNull(Plumber plumber, Resource resource) throws Exception {
+public class XPathPipe extends BasePipe {
+
+    public static final String RESOURCE_TYPE = "slingPipes/xpath";
+
+    public XPathPipe(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);
     }
 
     @Override
-    public Object getOutputBinding() {
-        return null;
-    }
-
-    @Override
     public Iterator<Resource> getOutput() {
-        return new Iterator<Resource>() {
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
-
-            @Override
-            public Resource next() {
-                return null;
-            }
-        };
+        String query = getExpr();
+        if (StringUtils.isNotBlank(query)){
+            return resource.getResourceResolver().findResources(query, Query.XPATH);
+        }
+        return Collections.emptyIterator();
     }
 }
