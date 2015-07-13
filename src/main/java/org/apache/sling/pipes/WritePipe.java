@@ -62,9 +62,10 @@ public class WritePipe extends BasePipe {
      */
     protected Object computeValue(Resource resource, String key, Object expression) {
         if (expression instanceof String) {
-            String value = parent != null ? parent.instantiateExpression((String) expression) : (String) expression;
-            if (value != null) {
-                Matcher patch = addPatch.matcher(value);
+            Object value = parent != null ? parent.instantiateObject((String) expression) : (String) expression;
+            if (value != null && value instanceof String) {
+                String sValue = (String)value;
+                Matcher patch = addPatch.matcher(sValue);
                 if (patch.matches()) {
                     String newValue = patch.group(1);
                     String[] actualValues = resource.adaptTo(ValueMap.class).get(key, String[].class);
@@ -74,10 +75,12 @@ public class WritePipe extends BasePipe {
                     }
                     return newValues.toArray(new String[newValues.size()]);
                 }
-                Matcher multiMatcher = multi.matcher(value);
+                Matcher multiMatcher = multi.matcher(sValue);
                 if (multiMatcher.matches()) {
                     return multiMatcher.group(1).split(",");
                 }
+            } else {
+
             }
             return value;
         }

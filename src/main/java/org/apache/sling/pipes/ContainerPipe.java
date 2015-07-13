@@ -21,11 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.Bindings;
+import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -78,13 +81,37 @@ public class ContainerPipe extends BasePipe {
 
     /**
      * Expression is a function of variables from execution context, that
-     * we implement here
+     * we implement here as a String
      * @param expr
      * @return
      */
     public String instantiateExpression(String expr){
         try {
             return (String)engine.eval(expr, pipeBindings);
+        } catch (ScriptException e) {
+            log.error("Unable to evaluate the script", e);
+        }
+        return expr;
+    }
+
+    /**
+     * Instantiate object from expression
+     * @param expr
+     * @return
+     */
+    public Object instantiateObject(String expr){
+        try {
+            Object result = engine.eval(expr, pipeBindings);
+            if (! (result instanceof String)) {
+                JsDate jsDate = ((Invocable) engine).getInterface(result, JsDate.class);
+                if (jsDate != null ) {
+                    Date date = new Date(jsDate.getTime() + jsDate.getTimezoneOffset() * 60 * 1000);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(date);
+                    return cal;
+                }
+            }
+            return result;
         } catch (ScriptException e) {
             log.error("Unable to evaluate the script", e);
         }
@@ -257,4 +284,13 @@ public class ContainerPipe extends BasePipe {
     static class PipeBindings extends HashMap<String, Object> implements Bindings {
 
     }
+
+    /**
+     * interface mapping a javascript date
+     */
+    public interface JsDate {
+        long getTime();
+        int getTimezoneOffset();
+    }
+
 }

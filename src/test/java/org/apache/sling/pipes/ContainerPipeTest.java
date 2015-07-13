@@ -20,6 +20,8 @@ import org.apache.sling.api.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,6 +56,23 @@ public class ContainerPipeTest extends AbstractPipeTest {
         pipe.pipeBindings.put("test", testMap);
         String newExpression = pipe.instantiateExpression("test.a + ' and ' + test.b");
         assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
+    }
+
+    @Test
+    public void testInstantiateObject() throws Exception {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_DUMMYTREE);
+        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
+        Map<String, String> testMap = new HashMap<>();
+        testMap.put("a", "apricots");
+        testMap.put("b", "bananas");
+        pipe.pipeBindings.put("test", testMap);
+        String newExpression = (String)pipe.instantiateObject("test.a + ' and ' + test.b");
+        assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
+        Calendar cal = (Calendar)pipe.instantiateObject("new Date(2012,04,12)");
+        assertNotNull("calendar should be instantiated", cal);
+        assertEquals("year should be correct", 2012, cal.get(Calendar.YEAR));
+        assertEquals("month should be correct", 4, cal.get(Calendar.MONTH));
+        assertEquals("date should be correct", 11, cal.get(Calendar.DAY_OF_MONTH));
     }
 
     @Test
