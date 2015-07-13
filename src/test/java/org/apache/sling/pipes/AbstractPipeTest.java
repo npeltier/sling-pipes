@@ -42,7 +42,6 @@ public class AbstractPipeTest {
     public void setup(){
         PlumberImpl plumberImpl = new PlumberImpl();
         plumberImpl.activate();
-        plumberImpl.registerPipe("slingPipes/dummy", BasePipe.class);
         plumberImpl.registerPipe("slingPipes/dummyNull", DummyNull.class);
         plumberImpl.registerPipe("slingPipes/dummySearch", DummySearch.class);
         plumber = plumberImpl;

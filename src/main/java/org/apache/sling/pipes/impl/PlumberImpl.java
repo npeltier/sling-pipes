@@ -28,6 +28,7 @@ import org.apache.sling.pipes.JsonPipe;
 import org.apache.sling.pipes.MultiPropertyPipe;
 import org.apache.sling.pipes.Pipe;
 import org.apache.sling.pipes.Plumber;
+import org.apache.sling.pipes.ReferencePipe;
 import org.apache.sling.pipes.SlingQueryPipe;
 import org.apache.sling.pipes.WritePipe;
 import org.apache.sling.pipes.XPathPipe;
@@ -53,6 +54,7 @@ public class PlumberImpl implements Plumber {
     @Activate
     public void activate(){
         registry = new HashMap<String, Class<? extends BasePipe>>();
+        registerPipe(BasePipe.RESOURCE_TYPE, BasePipe.class);
         registerPipe(ContainerPipe.RESOURCE_TYPE, ContainerPipe.class);
         registerPipe(SlingQueryPipe.RESOURCE_TYPE, SlingQueryPipe.class);
         registerPipe(WritePipe.RESOURCE_TYPE, WritePipe.class);
@@ -60,6 +62,7 @@ public class PlumberImpl implements Plumber {
         registerPipe(MultiPropertyPipe.RESOURCE_TYPE, MultiPropertyPipe.class);
         registerPipe(AuthorizablePipe.RESOURCE_TYPE, AuthorizablePipe.class);
         registerPipe(XPathPipe.RESOURCE_TYPE, XPathPipe.class);
+        registerPipe(ReferencePipe.RESOURCE_TYPE, ReferencePipe.class);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class PlumberImpl implements Plumber {
                 Class<? extends Pipe> pipeClass = registry.get(resource.getResourceType());
                 return pipeClass.getDeclaredConstructor(Plumber.class, Resource.class).newInstance(this, resource);
             } catch (Exception e) {
-                log.error("Unable to properly instantiate the pipe configured in {}", resource.getPath());
+                log.error("Unable to properly instantiate the pipe configured in {}", resource.getPath(), e);
             }
         }
         return null;

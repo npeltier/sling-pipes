@@ -62,7 +62,7 @@ public class ContainerPipe extends BasePipe {
             Resource pipeResource = childPipeResources.next();
             Pipe pipe = plumber.getPipe(pipeResource);
             if (pipe == null) {
-                log.error("configured pipe {} is not registered by the plumber", pipeResource.getPath());
+                log.error("configured pipe {} is either not registered, or not computable by the plumber", pipeResource.getPath());
             } else {
                 pipe.setParent(this);
                 pipes.put(pipe.getName(), pipe);

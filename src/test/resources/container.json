@@ -23,7 +23,7 @@
         }
       },
       "dummyGrandChild": {
-        "sling:resourceType":"slingPipes/dummy",
+        "sling:resourceType":"slingPipes/base",
         "path":"'/content/fruits/' + dummyParent.name + '/isnota/' + dummyChild.name + '/' + (dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')"
       }
     }
@@ -50,7 +50,7 @@
         }
       },
       "dummyGrandChild": {
-        "sling:resourceType":"slingPipes/dummy",
+        "sling:resourceType":"slingPipes/base",
         "path":"'/content/fruits/' + dummyParent.name + '/isnota/' + dummyChild.name + '/' + (dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')"
       }
     }
@@ -73,7 +73,7 @@
         "sling:resourceType":"slingPipes/dummyNull"
       },
       "dummyGrandChild": {
-        "sling:resourceType":"slingPipes/dummy",
+        "sling:resourceType":"slingPipes/base",
         "path":"'/content/fruits/' + dummyParent.name + '/isnota/' + dummyChild.name + '/' + (dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')"
       }
     }

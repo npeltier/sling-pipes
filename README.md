@@ -39,6 +39,10 @@ current output resource). Note that the node name will be used in case no name i
 * `expr` property, expression through which the pipe will execute (depending on the type) 
 * `conf` optional child node that contains addition configuration of the pipe (depending on the type)
 
+### Base pipe
+rather dummy pipe, outputs what is in input (so what is configured in path). Handy for doing some test mostly
+* `sling:resourceType` is `slingPipes/base`
+
 ### Container Pipe
 assemble a sequence of pipes, with its binding context pipes write to
 * `sling:resourceType` is `slingPipes/container`
@@ -74,6 +78,11 @@ retrieve authorizable resource corresponding to the id passed in epression
 retrieve resources resulting of an xpath query
 * `sling:resourceType` is `slingPipes/xpath`
 * `expr` should be a valid xpath query
+
+### ReferencePipe
+execute the pipe referenced in path property
+* `sling:resourceType` is `slingPipes/reference`
+* `path` path of the referenced pipe
 
 ## Making configuration dynamic with bindings
 in order to make things interesting, most of the configurations are javascript expressions: when a pipe 

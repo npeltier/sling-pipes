@@ -29,6 +29,8 @@ import java.util.List;
  * provides generic utilities for a pipe
  */
 public class BasePipe implements Pipe {
+    public static final String RESOURCE_TYPE = "slingPipes/base";
+
     protected ResourceResolver resolver;
     protected ValueMap properties;
     protected Resource resource;
