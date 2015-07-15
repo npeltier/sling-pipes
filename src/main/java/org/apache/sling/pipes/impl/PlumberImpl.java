@@ -81,12 +81,17 @@ public class PlumberImpl implements Plumber {
     }
 
     @Override
-    public Set<Resource> execute(ResourceResolver resolver, String path, boolean save) throws Exception {
+    public Set<Resource> execute(ResourceResolver resolver, String path, Map additionalBindings, boolean save) throws Exception {
         Resource pipeResource = resolver.getResource(path);
         Pipe pipe = getPipe(pipeResource);
         if (pipe == null) {
             throw new Exception("unable to build pipe based on configuration at " + path);
         }
+
+        if (additionalBindings != null && pipe instanceof ContainerPipe){
+            ((ContainerPipe)pipe).addBindings(additionalBindings);
+        }
+
         log.info("[{}] execution starts", pipe.getName());
         Set<Resource> set = new HashSet<>();
         for (Iterator<Resource> it = pipe.getOutput(); it.hasNext();){

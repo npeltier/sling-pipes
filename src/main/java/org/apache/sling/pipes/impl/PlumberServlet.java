@@ -23,11 +23,17 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.commons.json.JSONObject;
 import org.apache.sling.commons.json.io.JSONWriter;
 import org.apache.sling.pipes.Plumber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,8 +41,11 @@ import java.util.Set;
  */
 @SlingServlet(resourceTypes = {Plumber.RESOURCE_TYPE}, methods={"POST"}, extensions = {"json"})
 public class PlumberServlet extends SlingAllMethodsServlet {
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static final String PARAM_PATH = "path";
+
+    private static final String PARAM_BINDINGS = "bindings";
 
     @Reference
     Plumber plumber;
@@ -48,10 +57,24 @@ public class PlumberServlet extends SlingAllMethodsServlet {
             if (StringUtils.isBlank(path)) {
                 throw new Exception("path parameter should be provided");
             }
+            String paramBindings = request.getParameter(PARAM_BINDINGS);
+            Map additionalBindings = null;
+            if (StringUtils.isNotBlank(paramBindings)){
+                try {
+                    JSONObject bindingJSON = new JSONObject(paramBindings);
+                    additionalBindings = new HashMap<>();
+                    for (Iterator<String> keys = bindingJSON.keys(); keys.hasNext();){
+                        String key = keys.next();
+                        additionalBindings.put(key, bindingJSON.get(key));
+                    }
+                } catch (Exception e){
+                    log.error("Unable to retrieve bindings information", e);
+                }
+            }
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json");
             JSONWriter writer = new JSONWriter(response.getWriter());
-            Set<Resource> resources = plumber.execute(request.getResourceResolver(), path, true);
+            Set<Resource> resources = plumber.execute(request.getResourceResolver(), path, additionalBindings, true);
             writer.array();
             for (Resource resource : resources){
                 writer.value(resource.getPath());

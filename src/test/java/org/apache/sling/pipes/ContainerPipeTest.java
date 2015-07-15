@@ -39,6 +39,7 @@ public class ContainerPipeTest extends AbstractPipeTest {
     private static final String NN_DUMMYTREE = "dummyTree";
     private static final String NN_OTHERTREE = "otherTree";
     private static final String NN_ROTTENTREE = "rottenTree";
+    private static final String NN_MOREBINDINGS = "moreBindings";
 
     @Before
     public void setup() {
@@ -134,5 +135,13 @@ public class ContainerPipeTest extends AbstractPipeTest {
         ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
         Iterator<Resource> resourceIterator = pipe.getOutput();
         assertFalse("There shouldn't be any resource", resourceIterator.hasNext());
+    }
+
+    @Test
+    public void testAdditionalBindings() throws Exception {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
+        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
+        String expression = pipe.instantiateExpression("three");
+        assertEquals("computed expression should be taking additional bindings 'three' in account", "3", expression);
     }
 }

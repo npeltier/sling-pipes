@@ -17,6 +17,7 @@
 package org.apache.sling.pipes;
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,8 @@ public class ContainerPipe extends BasePipe {
     private static final Logger log = LoggerFactory.getLogger(ContainerPipe.class);
 
     public static final String RESOURCE_TYPE = "slingPipes/container";
+
+    public static final String NN_ADDITIONALBINDINGS = "additionalBindings";
 
     Map<String, Pipe> pipes = new HashMap<>();
 
@@ -77,6 +80,17 @@ public class ContainerPipe extends BasePipe {
 
         //add path bindings where path.MyPipe will give MyPipe current resource path
         pipeBindings.put(PATH_BINDING, pathBindings);
+
+        Resource additionalBindings = resource.getChild(NN_ADDITIONALBINDINGS);
+        if (additionalBindings != null) {
+            ValueMap bindings = additionalBindings.adaptTo(ValueMap.class);
+            addBindings(bindings);
+        }
+    }
+
+    public void addBindings(Map bindings) {
+        log.info("Adding bindings {}", bindings);
+        pipeBindings.putAll(bindings);
     }
 
     /**
@@ -113,7 +127,7 @@ public class ContainerPipe extends BasePipe {
             }
             return result;
         } catch (ScriptException e) {
-            log.error("Unable to evaluate the script", e);
+            log.error("Unable to evaluate the script for expr {} ", expr, e);
         }
         return expr;
     }

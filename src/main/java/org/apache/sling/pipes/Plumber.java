@@ -19,6 +19,7 @@ package org.apache.sling.pipes;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -39,10 +40,12 @@ public interface Plumber {
      * Executes a pipe at a certain path
      * @param resolver resource resolver with which pipe will be executed
      * @param path path of a valid pipe configuration
+     * @param bindings bindings to add to the execution of the pipe, can be null
      * @param save in case that pipe writes anything, wether the plumber should save changes or not
+     *
      * @return
      */
-    Set<Resource> execute(ResourceResolver resolver, String path, boolean save) throws Exception;
+    Set<Resource> execute(ResourceResolver resolver, String path, Map bindings, boolean save) throws Exception;
 
     /**
      * Registers
