@@ -74,10 +74,10 @@ public class PlumberServlet extends SlingAllMethodsServlet {
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json");
             JSONWriter writer = new JSONWriter(response.getWriter());
-            Set<Resource> resources = plumber.execute(request.getResourceResolver(), path, additionalBindings, true);
+            Set<String> resources = plumber.execute(request.getResourceResolver(), path, additionalBindings, true);
             writer.array();
-            for (Resource resource : resources){
-                writer.value(resource.getPath());
+            for (String resource : resources){
+                writer.value(resource);
             }
             writer.endArray();
             response.flushBuffer();

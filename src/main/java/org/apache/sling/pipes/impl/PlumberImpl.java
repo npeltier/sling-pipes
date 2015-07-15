@@ -16,11 +16,18 @@
  */
 package org.apache.sling.pipes.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.distribution.DistributionRequest;
+import org.apache.sling.distribution.DistributionRequestType;
+import org.apache.sling.distribution.DistributionResponse;
+import org.apache.sling.distribution.Distributor;
+import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.pipes.AuthorizablePipe;
 import org.apache.sling.pipes.BasePipe;
 import org.apache.sling.pipes.ContainerPipe;
@@ -50,6 +57,9 @@ public class PlumberImpl implements Plumber {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     Map<String, Class<? extends BasePipe>> registry;
+
+    @Reference
+    Distributor distributor;
 
     @Activate
     public void activate(){
@@ -81,7 +91,7 @@ public class PlumberImpl implements Plumber {
     }
 
     @Override
-    public Set<Resource> execute(ResourceResolver resolver, String path, Map additionalBindings, boolean save) throws Exception {
+    public Set<String> execute(ResourceResolver resolver, String path, Map additionalBindings, boolean save) throws Exception {
         Resource pipeResource = resolver.getResource(path);
         Pipe pipe = getPipe(pipeResource);
         if (pipe == null) {
@@ -93,17 +103,23 @@ public class PlumberImpl implements Plumber {
         }
 
         log.info("[{}] execution starts", pipe.getName());
-        Set<Resource> set = new HashSet<>();
+        Set<String> set = new HashSet<>();
         for (Iterator<Resource> it = pipe.getOutput(); it.hasNext();){
             Resource resource = it.next();
             if (resource != null) {
                 log.debug("[{}] retrieved {}", pipe.getName(), resource.getPath());
-                set.add(resource);
+                set.add(resource.getPath());
             }
         }
         if  (pipe.modifiesContent() && save && resolver.hasChanges()){
             log.info("[{}] saving changes...", pipe.getName());
             resolver.commit();
+            if (StringUtils.isNotBlank(pipe.getDistributionAgent())) {
+                log.info("a distribution agent is configured, will try to distribute the changes");
+                DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, true, set.toArray(new String[set.size()]));
+                DistributionResponse response = distributor.distribute(pipe.getDistributionAgent(), resolver, request);
+                log.info("distribution response : {}", response);
+            }
         }
         log.info("[{}] done executing.", pipe.getName());
         return set;

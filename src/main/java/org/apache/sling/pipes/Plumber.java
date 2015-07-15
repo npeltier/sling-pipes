@@ -45,7 +45,7 @@ public interface Plumber {
      *
      * @return
      */
-    Set<Resource> execute(ResourceResolver resolver, String path, Map bindings, boolean save) throws Exception;
+    Set<String> execute(ResourceResolver resolver, String path, Map bindings, boolean save) throws Exception;
 
     /**
      * Registers

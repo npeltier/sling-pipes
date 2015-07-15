@@ -35,6 +35,7 @@ public class BasePipe implements Pipe {
     protected ValueMap properties;
     protected Resource resource;
     protected ContainerPipe parent;
+    protected String distributionAgent;
 
     @Override
     public ContainerPipe getParent() {
@@ -55,6 +56,7 @@ public class BasePipe implements Pipe {
         resolver = resource.getResourceResolver();
         this.plumber = plumber;
         name = properties.get(PN_NAME, resource.getName());
+        distributionAgent = properties.get(PN_DISTRIBUTION_AGENT, String.class);
     }
 
     @Override
@@ -140,5 +142,10 @@ public class BasePipe implements Pipe {
      */
     public Resource getConfiguration() {
         return resource.getChild(NN_CONF);
+    }
+
+    @Override
+    public String getDistributionAgent() {
+        return distributionAgent;
     }
 }

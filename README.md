@@ -189,8 +189,10 @@ this use case is for completing repository profiles with external system's data 
 ```
 {
   "jcr:primaryType": "nt:unstructured",
-  "jcr:description": "this pipe retrieves json info from an external system and writes them to the user profile, uses moment.js",
+  "jcr:description": "this pipe retrieves json info from an external system and writes them to the user profile, uses moment.js, it
+  distributes modified resources using publish distribution agent",
   "sling:resourceType": "slingPipes/container",
+  "distribution.agent": "publish",
   "additionalScripts": "/etc/source/moment.js",
   "conf": {
     "jcr:primaryType": "sling:OrderedFolder",

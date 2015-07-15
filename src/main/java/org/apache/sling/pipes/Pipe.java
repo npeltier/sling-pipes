@@ -44,6 +44,8 @@ public interface Pipe {
      */
     public static final String NN_CONF = "conf";
 
+    public static final String PN_DISTRIBUTION_AGENT = "distribution.agent";
+
     /**
      * returns true if that pipe will modify content during its execution
      * @return
@@ -91,4 +93,9 @@ public interface Pipe {
      * @return
      */
     Iterator<Resource> getOutput();
+
+    /**
+     * Get Distribution agent
+     */
+    String getDistributionAgent();
 }
