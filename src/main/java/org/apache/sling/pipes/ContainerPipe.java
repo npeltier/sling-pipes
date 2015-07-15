@@ -23,9 +23,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.script.Bindings;
 import javax.script.Invocable;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -46,19 +50,21 @@ public class ContainerPipe extends BasePipe {
 
     public static final String NN_ADDITIONALBINDINGS = "additionalBindings";
 
+    public static final String PN_ADDITIONALSCRIPTS = "additionalScripts";
+
     Map<String, Pipe> pipes = new HashMap<>();
 
     Map<String, Resource> outputResources = new HashMap<>();
 
     Map<String, String> pathBindings = new HashMap<>();
 
-    PipeBindings pipeBindings = new PipeBindings();
-
     List<Pipe> pipeList = new ArrayList<>();
 
     List<Pipe> reversePipeList = new ArrayList<>();
 
     ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+
+    ScriptContext pipeContext = new SimpleScriptContext();
 
     public static final String PATH_BINDING = "path";
 
@@ -78,19 +84,62 @@ public class ContainerPipe extends BasePipe {
         }
         Collections.reverse(reversePipeList);
 
-        //add path bindings where path.MyPipe will give MyPipe current resource path
-        pipeBindings.put(PATH_BINDING, pathBindings);
+        engine.setContext(pipeContext);
 
+        //add path bindings where path.MyPipe will give MyPipe current resource path
+        getBindings().put(PATH_BINDING, pathBindings);
+
+        //additional bindings (global variables to use in child pipes expressions)
         Resource additionalBindings = resource.getChild(NN_ADDITIONALBINDINGS);
         if (additionalBindings != null) {
             ValueMap bindings = additionalBindings.adaptTo(ValueMap.class);
             addBindings(bindings);
         }
+
+        Resource scriptsResource = resource.getChild(PN_ADDITIONALSCRIPTS);
+        if (scriptsResource != null) {
+            String[] scripts = scriptsResource.adaptTo(String[].class);
+            if (scripts != null) {
+                for (String script : scripts){
+                    addScript(script);
+                }
+            }
+        }
     }
 
+    /**
+     * add a script file to the engine
+     * @param path
+     */
+    public void addScript(String path) {
+        Resource scriptResource = resolver.getResource(path);
+        if (scriptResource != null) {
+            InputStream is = scriptResource.adaptTo(InputStream.class);
+            if (is != null) {
+                try {
+                    engine.eval(new InputStreamReader(is), pipeContext);
+                } catch (Exception e) {
+                    log.error("unable to execute {}", path);
+                }
+            }
+        }
+    }
+
+    /**
+     * adds additional bindings (global variables to use in child pipes expressions)
+     * @param bindings
+     */
     public void addBindings(Map bindings) {
         log.info("Adding bindings {}", bindings);
-        pipeBindings.putAll(bindings);
+        getBindings().putAll(bindings);
+    }
+
+    public void addBinding(String name, Object value){
+        getBindings().put(name, value);
+    }
+
+    public Bindings getBindings() {
+        return pipeContext.getBindings(ScriptContext.ENGINE_SCOPE);
     }
 
     /**
@@ -101,7 +150,7 @@ public class ContainerPipe extends BasePipe {
      */
     public String instantiateExpression(String expr){
         try {
-            return (String)engine.eval(expr, pipeBindings);
+            return (String)engine.eval(expr, pipeContext);
         } catch (ScriptException e) {
             log.error("Unable to evaluate the script", e);
         }
@@ -115,8 +164,10 @@ public class ContainerPipe extends BasePipe {
      */
     public Object instantiateObject(String expr){
         try {
-            Object result = engine.eval(expr, pipeBindings);
-            if (! (result instanceof String)) {
+            Object result = engine.eval(expr, pipeContext);
+            if (! result.getClass().getName().startsWith("java.lang.")) {
+                //special case of the date in which case jdk.nashorn.api.scripting.ScriptObjectMirror will
+                //be returned
                 JsDate jsDate = ((Invocable) engine).getInterface(result, JsDate.class);
                 if (jsDate != null ) {
                     Date date = new Date(jsDate.getTime() + jsDate.getTimezoneOffset() * 60 * 1000);
@@ -157,7 +208,7 @@ public class ContainerPipe extends BasePipe {
         if (resource != null) {
             pathBindings.put(pipe.getName(), resource.getPath());
         }
-        pipeBindings.put(pipe.getName(), pipe.getOutputBinding());
+        addBinding(pipe.getName(), pipe.getOutputBinding());
     }
 
     /**
@@ -290,13 +341,6 @@ public class ContainerPipe extends BasePipe {
             }
             return null;
         }
-    }
-
-    /**
-     * Container bindings when evaluating a new expression
-     */
-    static class PipeBindings extends HashMap<String, Object> implements Bindings {
-
     }
 
     /**

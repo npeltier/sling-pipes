@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class ContainerPipeTest extends AbstractPipeTest {
         Map<String, String> testMap = new HashMap<>();
         testMap.put("a", "apricots");
         testMap.put("b", "bananas");
-        pipe.pipeBindings.put("test", testMap);
+        pipe.getBindings().put("test", testMap);
         String newExpression = pipe.instantiateExpression("test.a + ' and ' + test.b");
         assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
     }
@@ -66,7 +65,7 @@ public class ContainerPipeTest extends AbstractPipeTest {
         Map<String, String> testMap = new HashMap<>();
         testMap.put("a", "apricots");
         testMap.put("b", "bananas");
-        pipe.pipeBindings.put("test", testMap);
+        pipe.getBindings().put("test", testMap);
         String newExpression = (String)pipe.instantiateObject("test.a + ' and ' + test.b");
         assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
         Calendar cal = (Calendar)pipe.instantiateObject("new Date(2012,04,12)");
@@ -143,5 +142,14 @@ public class ContainerPipeTest extends AbstractPipeTest {
         ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
         String expression = pipe.instantiateExpression("three");
         assertEquals("computed expression should be taking additional bindings 'three' in account", "3", expression);
+    }
+
+    @Test
+    public void testAdditionalScript() throws Exception {
+        context.load().binaryFile("/testSum.js","/content/test/testSum.js");
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
+        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
+        Object expression = pipe.instantiateObject("testSumFunction(1,2)");
+        assertEquals("computed expression have testSum script's functionavailable", 3, expression);
     }
 }

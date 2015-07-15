@@ -96,7 +96,8 @@
     "additionalBindings": {
       "jcr:primaryType": "sling:Folder",
       "three": "3"
-    }
+    },
+    "additionalScripts": ["/content/test/testSum.js"]
   }
 
 

@@ -46,6 +46,8 @@ rather dummy pipe, outputs what is in input (so what is configured in path). Han
 ### Container Pipe
 assemble a sequence of pipes, with its binding context pipes write to
 * `sling:resourceType` is `slingPipes/container`
+* `additionalBinding` is a node you can add to set "global" bindings (property=value) in pipe execution
+* `additionalScripts` is a multi value property to declare scripts that can be reused in expressions
 * `conf` node contains child pipes' configurations, that will be configured in the order they are found (note you should use sling:OrderedFolder)
 
 ### SlingQuery Pipe
@@ -93,7 +95,10 @@ Following configuration are evaluated:
 * name/value of each property of a write pipe
 
 you can use name of previous pipes in the pipe container, or the special binding `path`, where `path.previousPipe` 
-is the path of the current resource of previous pipe named `previousPipe 
+is the path of the current resource of previous pipe named `previousPipe`
+
+global bindings can be set at pipe execution, external scripts can be added to the execution as well (see container pipe
+ configuration)
 
 ## How to execute a pipe
 for now it's possible to execute Pipes through POST command, you'll need to create a slingPipes/plumber resource,
@@ -102,6 +107,14 @@ say `etc/pipes` and then to execute
 curl -u admin:admin -F "path=/etc/pipes/mySamplePipe" http://localhost:8080/etc/pipes.json
 ```
 which will return you the path of the pipes that have been through the output of the configured pipe.
+
+you can add as `bindings` parameter a json object of global bindings you want to add for the execution of the pipe
+ 
+e.g. 
+
+```
+ curl -u admin:admin -F "path=/etc/pipes/test" -F "bindings={testBinding:'foo'}" http://localhost:4502/etc/pipes.json
+```
 
 ## sample configurations 
 
@@ -176,8 +189,9 @@ this use case is for completing repository profiles with external system's data 
 ```
 {
   "jcr:primaryType": "nt:unstructured",
-  "jcr:description": "this pipe retrieves json info from an external system and writes them to the user profile",
+  "jcr:description": "this pipe retrieves json info from an external system and writes them to the user profile, uses moment.js",
   "sling:resourceType": "slingPipes/container",
+  "additionalScripts": "/etc/source/moment.js",
   "conf": {
     "jcr:primaryType": "sling:OrderedFolder",
     "profile": {
@@ -199,7 +213,15 @@ this use case is for completing repository profiles with external system's data 
       "sling:resourceType": "slingPipes/write",
       "conf": {
         "jcr:primaryType": "sling:OrderedFolder",
+        "jcr:createdBy": "admin",
+        "'background'": "json.opt('background')",
         "'about'": "json.opt('about')",
+        "jcr:created": "Fri Jul 03 2015 15:32:22 GMT+0200",
+        "'birthday'": "json.opt('birthday') ? moment(json.opt('birthday'), \"MMMM DD\").toDate() : ''",
+        "'mobile'": "json.opt('mobile')",
+        "'connectRooms'": "json.opt('connectRooms')",
+        "'interests'": "json.opt('interests')",
+        "'volunteer'": "json.opt('volunteer')",
         "'status'": "json.opt('status')"
         }
       }
