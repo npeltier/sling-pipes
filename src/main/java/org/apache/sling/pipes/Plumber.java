@@ -48,6 +48,17 @@ public interface Plumber {
     Set<String> execute(ResourceResolver resolver, String path, Map bindings, boolean save) throws Exception;
 
     /**
+     * Executes a given pipe
+     * @param resolver resource resolver with which pipe will be executed
+     * @param pipe pipe to execute
+     * @param bindings bindings to add to the execution of the pipe, can be null
+     * @param save in case that pipe writes anything, wether the plumber should save changes or not
+     *
+     * @return
+     */
+    Set<String> execute(ResourceResolver resolver, Pipe pipe, Map bindings, boolean save) throws Exception;
+
+    /**
      * Registers
      * @param type
      * @param pipeClass

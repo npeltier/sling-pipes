@@ -35,9 +35,9 @@ import static org.junit.Assert.assertTrue;
  */
 public class ContainerPipeTest extends AbstractPipeTest {
 
-    private static final String NN_DUMMYTREE = "dummyTree";
-    private static final String NN_OTHERTREE = "otherTree";
-    private static final String NN_ROTTENTREE = "rottenTree";
+    public static final String NN_DUMMYTREE = "dummyTree";
+    public static final String NN_OTHERTREE = "otherTree";
+    public static final String NN_ROTTENTREE = "rottenTree";
     private static final String NN_MOREBINDINGS = "moreBindings";
 
     @Before

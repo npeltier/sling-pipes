@@ -97,7 +97,11 @@ public class PlumberImpl implements Plumber {
         if (pipe == null) {
             throw new Exception("unable to build pipe based on configuration at " + path);
         }
+        return execute(resolver, pipe, additionalBindings, save);
+    }
 
+    @Override
+    public Set<String> execute(ResourceResolver resolver, Pipe pipe, Map additionalBindings, boolean save) throws Exception {
         if (additionalBindings != null && pipe instanceof ContainerPipe){
             ((ContainerPipe)pipe).addBindings(additionalBindings);
         }

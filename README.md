@@ -101,12 +101,20 @@ global bindings can be set at pipe execution, external scripts can be added to t
  configuration)
 
 ## How to execute a pipe
-for now it's possible to execute Pipes through POST command, you'll need to create a slingPipes/plumber resource,
-say `etc/pipes` and then to execute
+for now it's possible to execute Pipes through GET (read) or POST (read/write) commands:
+
+### Request Path
+- either you'll need to create a slingPipes/plumber resource, say `etc/pipes` and then to execute
 ```
 curl -u admin:admin -F "path=/etc/pipes/mySamplePipe" http://localhost:8080/etc/pipes.json
 ```
+- either you execute the request directly on the pipe Path, e.g.
+```
+curl -u admin:admin http://localhost:8080/etc/pipes/mySamplePipe.json
+```
 which will return you the path of the pipes that have been through the output of the configured pipe.
+
+### Request Parameter `binding`
 
 you can add as `bindings` parameter a json object of global bindings you want to add for the execution of the pipe
  
@@ -114,6 +122,32 @@ e.g.
 
 ```
  curl -u admin:admin -F "path=/etc/pipes/test" -F "bindings={testBinding:'foo'}" http://localhost:4502/etc/pipes.json
+```
+
+will returns something like
+
+```
+["/one/output/resource", "another/one"]
+```
+
+### Request Parameter `writer`
+
+you can add as `writer` parameter a json object as a pattern to the result you want to have. The values of the json
+object are expressions and can reuse each pipe's subpipe binding. 
+Note 
+this works only if the pipe called is a container
+pipe.
+
+e.g.
+
+```
+curl -u admin:admin http://localhost:4502/etc/pipes/users.json?writer={"user":"'user.fullName'"}
+```
+
+will returns something similar to
+ 
+```
+[{'user':'John Smith','path':'/home/users/q/q123jk1UAZS'},{'user':'John Doe','path':'/home/users/q/q153jk1UAZS'}]
 ```
 
 ## sample configurations 

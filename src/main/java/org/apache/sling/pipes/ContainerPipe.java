@@ -337,7 +337,9 @@ public class ContainerPipe extends BasePipe {
             if (hasNext) {
                 computedCursor = false;
                 hasNext = false;
-                return iterators.get(container.getLastPipe()).next();
+                Resource resource =  iterators.get(container.getLastPipe()).next();
+                container.updateBindings(container.getLastPipe(), resource);
+                return resource;
             }
             return null;
         }
