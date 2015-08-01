@@ -131,7 +131,7 @@ public class BasePipe implements Pipe {
      * @return
      */
     public Iterator<Resource> getOutput(){
-        List<Resource> resourceList = new ArrayList<>();
+        List<Resource> resourceList = new ArrayList<Resource>();
         resourceList.add(getInput());
         return resourceList.iterator();
     }
@@ -148,4 +148,21 @@ public class BasePipe implements Pipe {
     public String getDistributionAgent() {
         return distributionAgent;
     }
+
+    public static final Iterator<Resource> EMPTY_ITERATOR = new Iterator<Resource>() {
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Resource next() {
+            return null;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+    };
 }

@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class AuthorizablePipe extends BasePipe {
             if (auth != null) {
                 Resource resource = resolver.getResource(auth.getPath());
                 if (resource != null) {
-                    List<Resource> resourceList = new ArrayList<>();
+                    List<Resource> resourceList = new ArrayList<Resource>();
                     resourceList.add(resource);
                     return resourceList.iterator();
                 }
@@ -59,6 +58,6 @@ public class AuthorizablePipe extends BasePipe {
         } catch (Exception e){
             logger.error("unable to output authorizable based on expression", e);
         }
-        return Collections.emptyIterator();
+        return EMPTY_ITERATOR;
     }
 }

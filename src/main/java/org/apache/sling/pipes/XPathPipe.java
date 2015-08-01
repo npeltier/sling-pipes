@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
 import javax.jcr.query.Query;
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -40,6 +39,6 @@ public class XPathPipe extends BasePipe {
         if (StringUtils.isNotBlank(query)){
             return resource.getResourceResolver().findResources(query, Query.XPATH);
         }
-        return Collections.emptyIterator();
+        return EMPTY_ITERATOR;
     }
 }

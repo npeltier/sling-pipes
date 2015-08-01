@@ -24,7 +24,6 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.Value;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -71,7 +70,22 @@ public class MultiPropertyPipe extends BasePipe {
     static class MVResourceIterator implements Iterator<Resource> {
         Resource resource;
         Value currentValue;
-        Iterator<Value> itValue = Collections.emptyIterator();
+        Iterator<Value> itValue = new Iterator<Value>() {
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public Value next() {
+                return null;
+            }
+
+            @Override
+            public void remove() {
+
+            }
+        };
 
         public MVResourceIterator(Resource resource){
             this.resource = resource;
@@ -104,6 +118,11 @@ public class MultiPropertyPipe extends BasePipe {
                 currentValue = itValue.next();
             }
             return resource;
+        }
+
+        @Override
+        public void remove() {
+
         }
     }
 }

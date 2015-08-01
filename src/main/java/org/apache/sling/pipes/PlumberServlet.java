@@ -77,7 +77,7 @@ public class PlumberServlet extends SlingAllMethodsServlet {
             if (StringUtils.isNotBlank(paramBindings)){
                 try {
                     JSONObject bindingJSON = new JSONObject(paramBindings);
-                    additionalBindings = new HashMap<>();
+                    additionalBindings = new HashMap<String, String>();
                     for (Iterator<String> keys = bindingJSON.keys(); keys.hasNext();){
                         String key = keys.next();
                         additionalBindings.put(key, bindingJSON.get(key));

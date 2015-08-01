@@ -52,15 +52,15 @@ public class ContainerPipe extends BasePipe {
 
     public static final String PN_ADDITIONALSCRIPTS = "additionalScripts";
 
-    Map<String, Pipe> pipes = new HashMap<>();
+    Map<String, Pipe> pipes = new HashMap<String, Pipe>();
 
-    Map<String, Resource> outputResources = new HashMap<>();
+    Map<String, Resource> outputResources = new HashMap<String, Resource>();
 
-    Map<String, String> pathBindings = new HashMap<>();
+    Map<String, String> pathBindings = new HashMap<String, String>();
 
-    List<Pipe> pipeList = new ArrayList<>();
+    List<Pipe> pipeList = new ArrayList<Pipe>();
 
-    List<Pipe> reversePipeList = new ArrayList<>();
+    List<Pipe> reversePipeList = new ArrayList<Pipe>();
 
     ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 
@@ -277,7 +277,7 @@ public class ContainerPipe extends BasePipe {
 
         ContainerResourceIterator(ContainerPipe containerPipe) {
             container = containerPipe;
-            iterators = new HashMap<>();
+            iterators = new HashMap<Pipe, Iterator<Resource>>();
             Pipe firstPipe = container.getFirstPipe();
             //we initialize the first iterator the only one not to be updated
             iterators.put(firstPipe, firstPipe.getOutput());
@@ -342,6 +342,11 @@ public class ContainerPipe extends BasePipe {
                 return resource;
             }
             return null;
+        }
+
+        @Override
+        public void remove() {
+
         }
     }
 

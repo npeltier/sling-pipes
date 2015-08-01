@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.sling.query.SlingQuery.$;
 
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -52,6 +51,6 @@ public class SlingQueryPipe extends BasePipe {
             logger.info("[sling query]: executing $({}).children({})", resource.getPath(), queryExpression);
             return query.iterator();
         }
-        return Collections.emptyIterator();
+        return EMPTY_ITERATOR;
     }
 }

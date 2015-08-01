@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -110,6 +109,6 @@ public class JsonPipe extends BasePipe {
         if (binding != null){
             return super.getOutput();
         }
-        return Collections.emptyIterator();
+        return EMPTY_ITERATOR;
     }
 }

@@ -271,5 +271,5 @@ some other samples are in https://github.com/npeltier/sling-pipes/tree/master/sr
 For running this tool on a sling instance you need:
 - java 8 (Nashorn is used for expression)
 - slingQuery (3.0.0) (used in SlingQueryPipe)
-- oak (1.2.2) (used in AuthorizablePipe)
+- jackrabbit (2.10.0) (used in AuthorizablePipe)
 

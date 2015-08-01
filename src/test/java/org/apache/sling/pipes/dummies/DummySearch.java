@@ -42,7 +42,7 @@ public class DummySearch extends BasePipe {
     @Override
     public Iterator<Resource> getOutput() {
         try {
-            NodeIterator iterator = getConfiguration().adaptTo(Node.class).getNodes();
+            final NodeIterator iterator = getConfiguration().adaptTo(Node.class).getNodes();
             return new Iterator<Resource>() {
 
                 @Override
@@ -58,6 +58,11 @@ public class DummySearch extends BasePipe {
 
                     }
                     return null;
+                }
+
+                @Override
+                public void remove() {
+
                 }
             };
         } catch (Exception e){

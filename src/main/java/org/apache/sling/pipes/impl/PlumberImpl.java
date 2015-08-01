@@ -107,7 +107,7 @@ public class PlumberImpl implements Plumber {
         }
 
         log.info("[{}] execution starts", pipe.getName());
-        Set<String> set = new HashSet<>();
+        Set<String> set = new HashSet<String>();
         for (Iterator<Resource> it = pipe.getOutput(); it.hasNext();){
             Resource resource = it.next();
             if (resource != null) {

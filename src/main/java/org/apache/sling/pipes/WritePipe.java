@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Property;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +68,7 @@ public class WritePipe extends BasePipe {
                 if (patch.matches()) {
                     String newValue = patch.group(1);
                     String[] actualValues = resource.adaptTo(ValueMap.class).get(key, String[].class);
-                    List<String> newValues = actualValues != null ? new LinkedList<>(Arrays.asList(actualValues)) : new ArrayList<>();
+                    List<String> newValues = actualValues != null ? new LinkedList<String>(Arrays.asList(actualValues)) : new ArrayList<String>();
                     if (!newValues.contains(newValue)) {
                         newValues.add(newValue);
                     }
@@ -124,6 +123,6 @@ public class WritePipe extends BasePipe {
         } catch (Exception e) {
             logger.error("unable to write values, cutting pipe", e);
         }
-        return Collections.emptyIterator();
+        return EMPTY_ITERATOR;
     }
 }
