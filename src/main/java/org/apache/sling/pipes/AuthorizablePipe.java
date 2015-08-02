@@ -50,7 +50,7 @@ public class AuthorizablePipe extends BasePipe {
             if (auth != null) {
                 Resource resource = resolver.getResource(auth.getPath());
                 if (resource != null) {
-                    List<Resource> resourceList = new ArrayList<Resource>();
+                    List<Resource> resourceList = new ArrayList<>();
                     resourceList.add(resource);
                     return resourceList.iterator();
                 }

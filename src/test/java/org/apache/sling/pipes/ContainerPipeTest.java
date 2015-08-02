@@ -50,7 +50,7 @@ public class ContainerPipeTest extends AbstractPipeTest {
     public void testInstantiateExpression() throws Exception {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_DUMMYTREE);
         ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
-        Map<String, String> testMap = new HashMap<String, String>();
+        Map<String, String> testMap = new HashMap<>();
         testMap.put("a", "apricots");
         testMap.put("b", "bananas");
         pipe.getBindings().put("test", testMap);
@@ -62,7 +62,7 @@ public class ContainerPipeTest extends AbstractPipeTest {
     public void testInstantiateObject() throws Exception {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_DUMMYTREE);
         ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
-        Map<String, String> testMap = new HashMap<String, String>();
+        Map<String, String> testMap = new HashMap<>();
         testMap.put("a", "apricots");
         testMap.put("b", "bananas");
         pipe.getBindings().put("test", testMap);

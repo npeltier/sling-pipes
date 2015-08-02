@@ -63,7 +63,7 @@ public class PlumberImpl implements Plumber {
 
     @Activate
     public void activate(){
-        registry = new HashMap<String, Class<? extends BasePipe>>();
+        registry = new HashMap<>();
         registerPipe(BasePipe.RESOURCE_TYPE, BasePipe.class);
         registerPipe(ContainerPipe.RESOURCE_TYPE, ContainerPipe.class);
         registerPipe(SlingQueryPipe.RESOURCE_TYPE, SlingQueryPipe.class);
@@ -107,7 +107,7 @@ public class PlumberImpl implements Plumber {
         }
 
         log.info("[{}] execution starts", pipe.getName());
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         for (Iterator<Resource> it = pipe.getOutput(); it.hasNext();){
             Resource resource = it.next();
             if (resource != null) {

@@ -22,6 +22,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -131,7 +132,7 @@ public class BasePipe implements Pipe {
      * @return
      */
     public Iterator<Resource> getOutput(){
-        List<Resource> resourceList = new ArrayList<Resource>();
+        List<Resource> resourceList = new ArrayList<>();
         resourceList.add(getInput());
         return resourceList.iterator();
     }
@@ -149,20 +150,5 @@ public class BasePipe implements Pipe {
         return distributionAgent;
     }
 
-    public static final Iterator<Resource> EMPTY_ITERATOR = new Iterator<Resource>() {
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public Resource next() {
-            return null;
-        }
-
-        @Override
-        public void remove() {
-
-        }
-    };
+    public static final Iterator<Resource> EMPTY_ITERATOR = Collections.emptyIterator();
 }

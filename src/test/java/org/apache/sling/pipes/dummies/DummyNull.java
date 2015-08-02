@@ -20,6 +20,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.pipes.BasePipe;
 import org.apache.sling.pipes.Plumber;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -37,16 +38,6 @@ public class DummyNull extends BasePipe {
 
     @Override
     public Iterator<Resource> getOutput() {
-        return new Iterator<Resource>() {
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
-
-            @Override
-            public Resource next() {
-                return null;
-            }
-        };
+        return Collections.emptyIterator();
     }
 }
