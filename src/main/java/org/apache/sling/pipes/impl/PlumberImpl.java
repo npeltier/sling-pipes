@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferenceCardinality;
+import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -58,8 +60,8 @@ public class PlumberImpl implements Plumber {
 
     Map<String, Class<? extends BasePipe>> registry;
 
-    @Reference
-    Distributor distributor;
+    @Reference (policy= ReferencePolicy.DYNAMIC, cardinality= ReferenceCardinality.OPTIONAL_UNARY)
+    protected volatile Distributor distributor = null;
 
     @Activate
     public void activate(){
@@ -118,7 +120,7 @@ public class PlumberImpl implements Plumber {
         if  (pipe.modifiesContent() && save && resolver.hasChanges()){
             log.info("[{}] saving changes...", pipe.getName());
             resolver.commit();
-            if (StringUtils.isNotBlank(pipe.getDistributionAgent())) {
+            if (distributor != null && StringUtils.isNotBlank(pipe.getDistributionAgent())) {
                 log.info("a distribution agent is configured, will try to distribute the changes");
                 DistributionRequest request = new SimpleDistributionRequest(DistributionRequestType.ADD, true, set.toArray(new String[set.size()]));
                 DistributionResponse response = distributor.distribute(pipe.getDistributionAgent(), resolver, request);
