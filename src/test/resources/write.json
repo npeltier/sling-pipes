@@ -58,5 +58,30 @@
         }
       }
     }
+  },
+  "simpleTree": {
+    "jcr:primaryType":"nt:unstructured",
+    "sling:resourceType":"slingPipes/write",
+    "path":"/content/fruits/apple",
+    "conf": {
+      "jcr:primaryType":"nt:unstructured",
+      "hasSeed":true,
+      "colors":["green","red"],
+      "components": {
+        "jcr:primaryType":"sling:Folder",
+        "skin": {
+          "jcr:primaryType":"nt:unstructured"
+        },
+        "flesh": {
+          "jcr:primaryType":"nt:unstructured"
+        },
+        "seed": {
+          "jcr:primaryType":"nt:unstructured"
+        },
+        "worm": {
+          "jcr:primaryType":"nt:unstructured"
+        }
+      }
+    }
   }
 }

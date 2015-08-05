@@ -21,6 +21,8 @@ import org.apache.sling.api.resource.ValueMap;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
@@ -32,6 +34,8 @@ public class WritePipeTest extends AbstractPipeTest {
 
     public static final String NN_PIPED = "piped";
     public static final String NN_VARIABLE_PIPED = "variablePipe";
+    public static final String NN_SIMPLETREE = "simpleTree";
+
     @Before
     public void setup() {
         super.setup();
@@ -86,5 +90,22 @@ public class WritePipeTest extends AbstractPipeTest {
         assertEquals("path should be the one configured in first pipe", pipePath + "/conf/fruit/conf/apple", resource.getPath());
         context.resourceResolver().commit();
         assertEquals("Configured value should be written", "apple is a fruit and its color is green", resource.adaptTo(ValueMap.class).get("jcr:description", ""));
+    }
+
+    @Test
+    public void testSimpleTree() throws Exception {
+        Resource confResource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_SIMPLETREE);
+        Pipe pipe = plumber.getPipe(confResource);
+        assertNotNull("pipe should be found", pipe);
+        assertTrue("this pipe should be marked as content modifier", pipe.modifiesContent());
+        pipe.getOutput();
+        context.resourceResolver().commit();
+        Resource appleResource = context.resourceResolver().getResource("/content/fruits/apple");
+        ValueMap properties =  appleResource.adaptTo(ValueMap.class);
+        assertTrue("There should be hasSeed set to true", properties.get("hasSeed", false));
+        assertArrayEquals("Colors should be correctly set", new String[]{"green", "red"}, properties.get("colors", String[].class));
+        Node appleNode = appleResource.adaptTo(Node.class);
+        NodeIterator children = appleNode.getNodes();
+        assertTrue("Apple node should have children", children.hasNext());
     }
 }

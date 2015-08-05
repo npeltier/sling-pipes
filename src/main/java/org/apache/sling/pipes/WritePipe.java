@@ -22,7 +22,10 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -38,9 +41,8 @@ import java.util.regex.Pattern;
 public class WritePipe extends BasePipe {
     private static final Logger logger = LoggerFactory.getLogger(WritePipe.class);
     public static final String RESOURCE_TYPE = "slingPipes/write";
-    ValueMap writeMap;
+    Node confTree;
     String resourceExpression;
-    List<Resource> resources;
     Pattern addPatch = Pattern.compile("\\+\\[(.*)\\]");
     Pattern multi = Pattern.compile("\\[(.*)\\]");
     public static final List<String> IGNORED_PROPERTIES = Arrays.asList(new String[]{"jcr:lastModified", "jcr:primaryType", "jcr:created", "jcr:createdBy"});
@@ -50,7 +52,7 @@ public class WritePipe extends BasePipe {
         if (getConfiguration() == null){
             throw new Exception("write pipe is misconfigured: it should have a configuration node");
         }
-        writeMap = getConfiguration().adaptTo(ValueMap.class);
+        confTree = getConfiguration().adaptTo(Node.class);
         resourceExpression = getPath();
     }
 
@@ -63,6 +65,7 @@ public class WritePipe extends BasePipe {
         if (expression instanceof String) {
             Object value = parent != null ? parent.instantiateObject((String) expression) : (String) expression;
             if (value != null && value instanceof String) {
+                //in that case we treat special case like MV or patches
                 String sValue = (String)value;
                 Matcher patch = addPatch.matcher(sValue);
                 if (patch.matches()) {
@@ -78,8 +81,6 @@ public class WritePipe extends BasePipe {
                 if (multiMatcher.matches()) {
                     return multiMatcher.group(1).split(",");
                 }
-            } else {
-
             }
             return value;
         }
@@ -91,33 +92,67 @@ public class WritePipe extends BasePipe {
         return true;
     }
 
+    /**
+     * Write properties from the configuration to the target resource,
+     * instantiating both property names & values
+     *
+     * @param conf
+     * @param target
+     * @throws RepositoryException
+     */
+    private void copyProperties(Resource conf, Resource target) throws RepositoryException {
+        ValueMap writeMap = conf.adaptTo(ValueMap.class);
+        ModifiableValueMap properties = target.adaptTo(ModifiableValueMap.class);
+        //writing current node
+        if (properties != null && writeMap != null) {
+            for (Map.Entry<String, Object> entry : writeMap.entrySet()) {
+                if (!IGNORED_PROPERTIES.contains(entry.getKey())) {
+                    String key = parent != null ? parent.instantiateExpression(entry.getKey()) : entry.getKey();
+                    Object value = computeValue(target, key, entry.getValue());
+                    if (value == null) {
+                        //null value are not handled by modifiable value maps,
+                        //removing the property if it exists
+                        Resource propertyResource = resource.getChild(key);
+                        if (propertyResource != null) {
+                            Property property = propertyResource.adaptTo(Property.class);
+                            if (property != null){
+                                property.remove();
+                            }
+                        }
+                    } else {
+                        properties.put(key, value);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * write the configured tree at the target resource, creating each node if needed, copying values.
+     * @param conf
+     * @return
+     */
+    private void writeTree(Node conf, Resource target) throws RepositoryException {
+        copyProperties(resolver.getResource(conf.getPath()), target);
+        NodeIterator childrenConf = conf.getNodes();
+        if (childrenConf.hasNext()){
+            Node targetNode = target.adaptTo(Node.class);
+            while (childrenConf.hasNext()){
+                Node childConf = childrenConf.nextNode();
+                String name = childConf.getName();
+                Node childTarget = targetNode.hasNode(name) ? targetNode.getNode(name) : targetNode.addNode(name, childConf.getPrimaryNodeType().getName());
+                writeTree(childConf, resolver.getResource(childTarget.getPath()));
+            }
+        }
+    }
+
+
     @Override
     public Iterator<Resource> getOutput() {
         try {
             Resource resource = getInput();
             if (resource != null) {
-                ModifiableValueMap properties = resource.adaptTo(ModifiableValueMap.class);
-                if (properties != null && writeMap != null) {
-                    for (Map.Entry<String, Object> entry : writeMap.entrySet()) {
-                        if (!IGNORED_PROPERTIES.contains(entry.getKey())) {
-                            String key = parent != null ? parent.instantiateExpression(entry.getKey()) : entry.getKey();
-                            Object value = computeValue(resource, key, entry.getValue());
-                            if (value == null) {
-                                //null value are not handled by modifiable value maps,
-                                //removing the property if it exists
-                                Resource propertyResource = resource.getChild(key);
-                                if (propertyResource != null) {
-                                    Property property = propertyResource.adaptTo(Property.class);
-                                    if (property != null){
-                                        property.remove();
-                                    }
-                                }
-                            } else {
-                                properties.put(key, value);
-                            }
-                        }
-                    }
-                }
+                writeTree(confTree, resource);
                 return super.getOutput();
             }
         } catch (Exception e) {

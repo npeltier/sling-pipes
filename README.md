@@ -58,7 +58,8 @@ executes $(getInput()).children(expression)
 ### Write Pipe
 writes given properties to current input
 * `sling:resourceType` is `slingPipes/slingQuery`
-* `conf` properties names and value of which will be written to the input resource, same resource will be returned  
+* `conf` node tree that will be copied to the current input of the pipe, each node's properties 
+names and value will be written to the input resource. Input resource will be outputed. 
 
 ### JsonPipe
 feeds bindings with remote json
@@ -272,4 +273,3 @@ For running this tool on a sling instance you need:
 - java 8 (Nashorn is used for expression)
 - slingQuery (3.0.0) (used in SlingQueryPipe)
 - jackrabbit api (2.7.5+) (used in AuthorizablePipe)
-
