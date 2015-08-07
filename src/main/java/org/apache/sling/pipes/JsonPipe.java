@@ -27,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.commons.json.JSONArray;
+import org.apache.sling.commons.json.JSONException;
 import org.apache.sling.commons.json.JSONObject;
 import org.apache.sling.commons.json.JSONTokener;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import java.io.StringWriter;
 import java.util.Iterator;
 
 /**
- * Pipe outputing binding related to a json stream
+ * Pipe outputing binding related to a json stream: either an object
  */
 public class JsonPipe extends BasePipe {
     private static Logger logger = LoggerFactory.getLogger(JsonPipe.class);
@@ -45,7 +46,11 @@ public class JsonPipe extends BasePipe {
 
     HttpClient client;
 
+    JSONArray array;
     Object binding;
+    int index = -1;
+
+    public final String REMOTE_START = "http";
 
     public JsonPipe(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);
@@ -69,46 +74,91 @@ public class JsonPipe extends BasePipe {
     }
 
     /**
+     * Retrieve remote JSON String, or null if any problem occurs
+     * @return
+     */
+    private String retrieveJSONString()  {
+        String json = null;
+        String expression = getExpr();
+        if (expression.startsWith(REMOTE_START)){
+            GetMethod method = null;
+            HttpState httpState = new HttpState();
+            InputStream responseInputStream = null;
+            try {
+                String url = getExpr();
+                if (StringUtils.isNotBlank(url)) {
+                    method = new GetMethod(url);
+                    logger.debug("Executing GET {}", url);
+                    int status = client.executeMethod(null, method, httpState);
+                    if (status == HttpStatus.SC_OK) {
+                        logger.debug("200 received, streaming content");
+                        responseInputStream = method.getResponseBodyAsStream();
+                        StringWriter writer = new StringWriter();
+                        IOUtils.copy(responseInputStream, writer, "utf-8");
+                        json = writer.toString();
+                    }
+                }
+            }
+            catch(Exception e){
+                logger.error("unable to retrieve the data", e);
+            }finally{
+                if (method != null) {
+                    method.releaseConnection();
+                }
+                IOUtils.closeQuietly(responseInputStream);
+            }
+        } else {
+            //other try: given expression *is* json
+            json = expression;
+        }
+        return json;
+    }
+
+
+    /**
      * in case there is no successful retrieval of some JSON data, we cut the pipe here
      * @return
      */
     public Iterator<Resource> getOutput() {
+        Iterator<Resource> output = EMPTY_ITERATOR;
         binding = null;
-        GetMethod method = null;
-        HttpState httpState = new HttpState();
-        InputStream responseInputStream = null;
-        try {
-            String url = getExpr();
-            if (StringUtils.isNotBlank(url)) {
-                method = new GetMethod(url);
-                logger.debug("Executing GET {}", url);
-                int status = client.executeMethod(null,method,httpState);
-                if (status == HttpStatus.SC_OK) {
-                    logger.debug("200 received, streaming content");
-                    responseInputStream = method.getResponseBodyAsStream();
-                    StringWriter writer = new StringWriter();
-                    IOUtils.copy(responseInputStream, writer, "utf-8");
-                    String jsonString = writer.toString();
-                    JSONTokener tokener = new JSONTokener(jsonString);
-                    if (tokener.next() == '[') {
-                        binding = new JSONArray(jsonString);
-                    } else {
-                        binding = new JSONObject(jsonString);
-                    }
+        String jsonString = retrieveJSONString();
+        if (StringUtils.isNotBlank(jsonString)){
+            try {
+                JSONTokener tokener = new JSONTokener(jsonString);
+                char firstChar = tokener.next();
+                if (firstChar == '[') {
+                    binding = array = new JSONArray(jsonString);
+                    index = 0;
+                    output = new Iterator<Resource>() {
+                        @Override
+                        public boolean hasNext() {
+                            return index < array.length();
+                        }
+
+                        @Override
+                        public Resource next() {
+                            try {
+                                binding = array.get(index);
+                            } catch(Exception e){
+                                logger.error("Unable to retrieve {}nth item of jsonarray", index, e);
+                            }
+                            index++;
+                            return getInput();
+                        }
+                    };
+                } else if (firstChar == '{') {
+                    binding = new JSONObject(jsonString);
+                    output = super.getOutput();
+                } else {
+                    //simple string
+                    binding = jsonString;
+                    output = super.getOutput();
                 }
+            } catch (JSONException e) {
+                logger.error("unable to parse JSON {} ", jsonString, e);
             }
         }
-        catch(Exception e) {
-            logger.error("unable to retrieve the data", e);
-        } finally {
-            if (method != null){
-                method.releaseConnection();
-            }
-            IOUtils.closeQuietly(responseInputStream);
-        }
-        if (binding != null){
-            return super.getOutput();
-        }
-        return EMPTY_ITERATOR;
+        return output;
     }
 }

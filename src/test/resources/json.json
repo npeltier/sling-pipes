@@ -36,9 +36,38 @@
           }
         }
       }
+    },
+    "array": {
+      "jcr:primaryType": "nt:unstructured",
+      "sling:resourceType": "slingPipes/container",
+      "conf": {
+        "jcr:primaryType": "sling:Folder",
+        "json": {
+          "sling:resourceType": "slingPipes/json",
+          "expr": "'[{\"path\":\"one\"},{\"path\":\"two\"},{\"path\":\"three\"}]'"
+        },
+        "user": {
+          "sling:resourceType": "slingPipes/base",
+          "path":"'/content/json/array/' + json.get('path')"
+        }
+      }
+
+
     }
   },
   "windSpeed":{
     "jcr:primaryType": "nt:unstructured"
+  },
+  "array": {
+    "jcr:primaryType": "nt:unstructured",
+    "one": {
+      "jcr:primaryType": "nt:unstructured"
+    },
+    "two": {
+      "jcr:primaryType": "nt:unstructured"
+    },
+    "three": {
+      "jcr:primaryType": "nt:unstructured"
+    }
   }
 }

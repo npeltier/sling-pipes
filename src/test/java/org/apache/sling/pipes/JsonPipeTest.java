@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
  */
 public class JsonPipeTest extends AbstractPipeTest {
     public static final String CONF = "/content/json/conf/weather";
+    public static final String ARRAY = "/content/json/conf/array";
 
     @Before
     public void setup() {
@@ -48,5 +49,19 @@ public class JsonPipeTest extends AbstractPipeTest {
         ValueMap properties = result.adaptTo(ValueMap.class);
         assertTrue("There should be a Paris property", properties.containsKey("Paris"));
         assertTrue("There should be a Bucharest property", properties.containsKey("Bucharest"));
+    }
+
+    @Test
+    public void testPipedArray() throws Exception {
+        Resource resource = context.resourceResolver().getResource(ARRAY);
+        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
+        Iterator<Resource> outputs = pipe.getOutput();
+        Resource first = outputs.next();
+        Resource second = outputs.next();
+        Resource third = outputs.next();
+        assertFalse("there should be only three elements", outputs.hasNext());
+        assertEquals("first resource should be one", "/content/json/array/one", first.getPath());
+        assertEquals("second resource should be two", "/content/json/array/two", second.getPath());
+        assertEquals("third resource should be three", "/content/json/array/three", third.getPath());
     }
 }
