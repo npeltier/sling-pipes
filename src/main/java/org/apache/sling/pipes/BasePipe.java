@@ -31,6 +31,7 @@ import java.util.List;
  */
 public class BasePipe implements Pipe {
     public static final String RESOURCE_TYPE = "slingPipes/base";
+    protected static final String DRYRUN = "dryRun";
 
     protected ResourceResolver resolver;
     protected ValueMap properties;
@@ -38,6 +39,8 @@ public class BasePipe implements Pipe {
     protected ContainerPipe parent;
     protected String distributionAgent;
     protected PipeBindings bindings;
+
+    protected Boolean dryRun;
 
     @Override
     public ContainerPipe getParent() {
@@ -60,6 +63,14 @@ public class BasePipe implements Pipe {
         name = properties.get(PN_NAME, resource.getName());
         distributionAgent = properties.get(PN_DISTRIBUTION_AGENT, String.class);
         bindings = new PipeBindings(resource);
+    }
+
+    public boolean isDryRun() {
+        if (dryRun == null) {
+            Object run = bindings.instantiateObject(DRYRUN);
+            dryRun =  run != null && run instanceof Boolean ? (Boolean)run : false;
+        }
+        return dryRun;
     }
 
     @Override

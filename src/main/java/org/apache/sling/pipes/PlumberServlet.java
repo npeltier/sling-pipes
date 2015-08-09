@@ -73,12 +73,18 @@ public class PlumberServlet extends SlingAllMethodsServlet {
             if (StringUtils.isBlank(path)) {
                 throw new Exception("path should be provided");
             }
+            String dryRun = request.getParameter(BasePipe.DRYRUN);
             String paramBindings = request.getParameter(PARAM_BINDINGS);
+
             Map additionalBindings = null;
+            if (StringUtils.isNotBlank(dryRun) && dryRun.equals(Boolean.TRUE.toString())) {
+                additionalBindings = new HashMap<>();
+                additionalBindings.put(BasePipe.DRYRUN, true);
+            }
             if (StringUtils.isNotBlank(paramBindings)){
                 try {
                     JSONObject bindingJSON = new JSONObject(paramBindings);
-                    additionalBindings = new HashMap<>();
+                    additionalBindings = additionalBindings != null ? additionalBindings: new HashMap<>();
                     for (Iterator<String> keys = bindingJSON.keys(); keys.hasNext();){
                         String key = keys.next();
                         additionalBindings.put(key, bindingJSON.get(key));

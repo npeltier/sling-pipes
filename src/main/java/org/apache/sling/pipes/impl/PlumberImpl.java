@@ -117,7 +117,7 @@ public class PlumberImpl implements Plumber {
                 set.add(resource.getPath());
             }
         }
-        if  (pipe.modifiesContent() && save && resolver.hasChanges()){
+        if  (pipe.modifiesContent() && save && resolver.hasChanges() && pipe.isDryRun()){
             log.info("[{}] saving changes...", pipe.getName());
             resolver.commit();
             if (distributor != null && StringUtils.isNotBlank(pipe.getDistributionAgent())) {

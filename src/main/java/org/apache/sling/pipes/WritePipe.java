@@ -103,6 +103,7 @@ public class WritePipe extends BasePipe {
     private void copyProperties(Resource conf, Resource target) throws RepositoryException {
         ValueMap writeMap = conf.adaptTo(ValueMap.class);
         ModifiableValueMap properties = target.adaptTo(ModifiableValueMap.class);
+
         //writing current node
         if (properties != null && writeMap != null) {
             for (Map.Entry<String, Object> entry : writeMap.entrySet()) {
@@ -114,13 +115,21 @@ public class WritePipe extends BasePipe {
                         //removing the property if it exists
                         Resource propertyResource = resource.getChild(key);
                         if (propertyResource != null) {
-                            Property property = propertyResource.adaptTo(Property.class);
-                            if (property != null){
-                                property.remove();
+                            if (isDryRun()){
+                                logger.info("[dryrun] removing {}", propertyResource.getPath());
+                            } else {
+                                Property property = propertyResource.adaptTo(Property.class);
+                                if (property != null) {
+                                    property.remove();
+                                }
                             }
                         }
                     } else {
-                        properties.put(key, value);
+                        if (isDryRun()){
+                            logger.info("[dryrun] writing {}={}",target.getPath() + "@" + key, value);
+                        } else {
+                            properties.put(key, value);
+                        }
                     }
                 }
             }
@@ -140,8 +149,12 @@ public class WritePipe extends BasePipe {
             while (childrenConf.hasNext()){
                 Node childConf = childrenConf.nextNode();
                 String name = childConf.getName();
-                Node childTarget = targetNode.hasNode(name) ? targetNode.getNode(name) : targetNode.addNode(name, childConf.getPrimaryNodeType().getName());
-                writeTree(childConf, resolver.getResource(childTarget.getPath()));
+                if (isDryRun()){
+                    logger.info("[dryrun] dubbing {} at {}", conf.getPath(), target.getPath());
+                } else {
+                    Node childTarget = targetNode.hasNode(name) ? targetNode.getNode(name) : targetNode.addNode(name, childConf.getPrimaryNodeType().getName());
+                    writeTree(childConf, resolver.getResource(childTarget.getPath()));
+                }
             }
         }
     }

@@ -52,7 +52,17 @@ public class WritePipeTest extends AbstractPipeTest {
         context.resourceResolver().commit();
         ValueMap properties =  context.resourceResolver().getResource("/content/fruits/apple").adaptTo(ValueMap.class);
         assertTrue("There should be hasSeed set to true", properties.get("hasSeed", false));
-        assertArrayEquals("Colors should be correctly set", new String[]{"green","red"},properties.get("colors", String[].class));
+        assertArrayEquals("Colors should be correctly set", new String[]{"green", "red"}, properties.get("colors", String[].class));
+    }
+
+    /**
+     *
+     * @param resource
+     */
+    public static void assertPiped(Resource resource) {
+        ValueMap properties = resource.adaptTo(ValueMap.class);
+        assertArrayEquals("Second fruit should have been correctly instantiated & patched, added to the first", new String[]{"apple","banana"}, properties.get("fruits", String[].class));
+        assertArrayEquals("Fixed mv should be there", new String[]{"cabbage","carrot"}, properties.get("fixedVegetables", String[].class));
     }
 
     @Test
@@ -74,9 +84,7 @@ public class WritePipeTest extends AbstractPipeTest {
         assertNotNull("The second result should not be null", resource);
         assertEquals("The second result should be the configured one in the piped write pipe", "/content/fruits", resource.getPath());
         context.resourceResolver().commit();
-        properties = resource.adaptTo(ValueMap.class);
-        assertArrayEquals("Second fruit should have been correctly instantiated & patched, added to the first", new String[]{"apple","banana"}, properties.get("fruits", String[].class));
-        assertArrayEquals("Fixed mv should be there", new String[]{"cabbage","carrot"}, properties.get("fixedVegetables", String[].class));
+        assertPiped(resource);
     }
 
     @Test

@@ -53,6 +53,12 @@ public interface Pipe {
     boolean modifiesContent();
 
     /**
+     * returns true if that pipe is set not to write content
+     * @return
+     */
+    boolean isDryRun();
+
+    /**
      * Return the name of that pipe
      * @return
      */
