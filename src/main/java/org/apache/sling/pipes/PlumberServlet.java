@@ -107,10 +107,9 @@ public class PlumberServlet extends SlingAllMethodsServlet {
                 throw new Exception("This pipe modifies content, you should use a POST request");
             }
             writer.array();
-            if (writerObj != null && pipe instanceof ContainerPipe) {
-                ContainerPipe container = (ContainerPipe)pipe;
-                container.addBindings(additionalBindings);
-                Iterator<Resource> resourceIterator = container.getOutput();
+            if (writerObj != null) {
+                pipe.getBindings().addBindings(additionalBindings);
+                Iterator<Resource> resourceIterator = pipe.getOutput();
                 while (resourceIterator.hasNext()){
                     Resource resource = resourceIterator.next();
                     writer.object();
@@ -118,7 +117,7 @@ public class PlumberServlet extends SlingAllMethodsServlet {
                     Iterator<String> keys = writerObj.keys();
                     while (keys.hasNext()){
                         String key = keys.next();
-                        writer.key(key).value(container.instantiateObject(writerObj.getString(key)));
+                        writer.key(key).value(pipe.getBindings().instantiateObject(writerObj.getString(key)));
                     }
                     writer.endObject();
                 }

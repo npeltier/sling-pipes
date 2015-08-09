@@ -37,6 +37,7 @@ public class BasePipe implements Pipe {
     protected Resource resource;
     protected ContainerPipe parent;
     protected String distributionAgent;
+    protected PipeBindings bindings;
 
     @Override
     public ContainerPipe getParent() {
@@ -58,6 +59,7 @@ public class BasePipe implements Pipe {
         this.plumber = plumber;
         name = properties.get(PN_NAME, resource.getName());
         distributionAgent = properties.get(PN_DISTRIBUTION_AGENT, String.class);
+        bindings = new PipeBindings(resource);
     }
 
     @Override
@@ -75,10 +77,7 @@ public class BasePipe implements Pipe {
      */
     public String getExpr(){
         String rawExpression = properties.get(PN_EXPR, "");
-        if(parent != null) {
-            return parent.instantiateExpression(rawExpression);
-        }
-        return rawExpression;
+        return bindings.instantiateExpression(rawExpression);
     }
 
     /**
@@ -87,10 +86,7 @@ public class BasePipe implements Pipe {
      */
     public String getPath() {
         String rawPath = properties.get(PN_PATH, "");
-        if(parent != null) {
-            return parent.instantiateExpression(rawPath);
-        }
-        return rawPath;
+        return bindings.instantiateExpression(rawPath);
     }
 
     @Override
@@ -109,7 +105,7 @@ public class BasePipe implements Pipe {
         if (resource == null && parent != null){
             Pipe previousPipe = parent.getPreviousPipe(this);
             if (previousPipe != null) {
-                return parent.getExecutedResource(previousPipe.getName());
+                return bindings.getExecutedResource(previousPipe.getName());
             }
         }
         return resource;
@@ -119,12 +115,22 @@ public class BasePipe implements Pipe {
     @Override
     public Object getOutputBinding() {
         if (parent != null){
-            Resource resource = parent.getExecutedResource(getName());
+            Resource resource = bindings.getExecutedResource(getName());
             if (resource != null) {
                 return resource.adaptTo(ValueMap.class);
             }
         }
         return null;
+    }
+
+    @Override
+    public PipeBindings getBindings() {
+        return bindings;
+    }
+
+    @Override
+    public void setBindings(PipeBindings bindings) {
+        this.bindings = bindings;
     }
 
     /**

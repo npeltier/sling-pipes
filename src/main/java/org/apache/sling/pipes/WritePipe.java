@@ -63,7 +63,7 @@ public class WritePipe extends BasePipe {
      */
     protected Object computeValue(Resource resource, String key, Object expression) {
         if (expression instanceof String) {
-            Object value = parent != null ? parent.instantiateObject((String) expression) : (String) expression;
+            Object value = bindings.instantiateObject((String) expression);
             if (value != null && value instanceof String) {
                 //in that case we treat special case like MV or patches
                 String sValue = (String)value;
@@ -107,7 +107,7 @@ public class WritePipe extends BasePipe {
         if (properties != null && writeMap != null) {
             for (Map.Entry<String, Object> entry : writeMap.entrySet()) {
                 if (!IGNORED_PROPERTIES.contains(entry.getKey())) {
-                    String key = parent != null ? parent.instantiateExpression(entry.getKey()) : entry.getKey();
+                    String key = parent != null ? bindings.instantiateExpression(entry.getKey()) : entry.getKey();
                     Object value = computeValue(target, key, entry.getValue());
                     if (value == null) {
                         //null value are not handled by modifiable value maps,

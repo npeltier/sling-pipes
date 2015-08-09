@@ -105,7 +105,7 @@ public class PlumberImpl implements Plumber {
     @Override
     public Set<String> execute(ResourceResolver resolver, Pipe pipe, Map additionalBindings, boolean save) throws Exception {
         if (additionalBindings != null && pipe instanceof ContainerPipe){
-            ((ContainerPipe)pipe).addBindings(additionalBindings);
+            pipe.getBindings().addBindings(additionalBindings);
         }
 
         log.info("[{}] execution starts", pipe.getName());

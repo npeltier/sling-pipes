@@ -20,10 +20,7 @@ import org.apache.sling.api.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -38,41 +35,11 @@ public class ContainerPipeTest extends AbstractPipeTest {
     public static final String NN_DUMMYTREE = "dummyTree";
     public static final String NN_OTHERTREE = "otherTree";
     public static final String NN_ROTTENTREE = "rottenTree";
-    private static final String NN_MOREBINDINGS = "moreBindings";
 
     @Before
     public void setup() {
         super.setup();
         context.load().json("/container.json", PATH_PIPE);
-    }
-
-    @Test
-    public void testInstantiateExpression() throws Exception {
-        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_DUMMYTREE);
-        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
-        Map<String, String> testMap = new HashMap<>();
-        testMap.put("a", "apricots");
-        testMap.put("b", "bananas");
-        pipe.getBindings().put("test", testMap);
-        String newExpression = pipe.instantiateExpression("test.a + ' and ' + test.b");
-        assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
-    }
-
-    @Test
-    public void testInstantiateObject() throws Exception {
-        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_DUMMYTREE);
-        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
-        Map<String, String> testMap = new HashMap<>();
-        testMap.put("a", "apricots");
-        testMap.put("b", "bananas");
-        pipe.getBindings().put("test", testMap);
-        String newExpression = (String)pipe.instantiateObject("test.a + ' and ' + test.b");
-        assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
-        Calendar cal = (Calendar)pipe.instantiateObject("new Date(2012,04,12)");
-        assertNotNull("calendar should be instantiated", cal);
-        assertEquals("year should be correct", 2012, cal.get(Calendar.YEAR));
-        assertEquals("month should be correct", 4, cal.get(Calendar.MONTH));
-        assertEquals("date should be correct", 11, cal.get(Calendar.DAY_OF_MONTH));
     }
 
     @Test
@@ -134,22 +101,5 @@ public class ContainerPipeTest extends AbstractPipeTest {
         ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
         Iterator<Resource> resourceIterator = pipe.getOutput();
         assertFalse("There shouldn't be any resource", resourceIterator.hasNext());
-    }
-
-    @Test
-    public void testAdditionalBindings() throws Exception {
-        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
-        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
-        String expression = pipe.instantiateExpression("three");
-        assertEquals("computed expression should be taking additional bindings 'three' in account", "3", expression);
-    }
-
-    @Test
-    public void testAdditionalScript() throws Exception {
-        context.load().binaryFile("/testSum.js","/content/test/testSum.js");
-        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
-        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
-        Object expression = pipe.instantiateObject("testSumFunction(1,2)");
-        assertEquals("computed expression have testSum script's functionavailable", 3, expression);
     }
 }

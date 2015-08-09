@@ -48,25 +48,11 @@ public class ContainerPipe extends BasePipe {
 
     public static final String RESOURCE_TYPE = "slingPipes/container";
 
-    public static final String NN_ADDITIONALBINDINGS = "additionalBindings";
-
-    public static final String PN_ADDITIONALSCRIPTS = "additionalScripts";
-
     Map<String, Pipe> pipes = new HashMap<>();
-
-    Map<String, Resource> outputResources = new HashMap<>();
-
-    Map<String, String> pathBindings = new HashMap<>();
 
     List<Pipe> pipeList = new ArrayList<>();
 
     List<Pipe> reversePipeList = new ArrayList<>();
-
-    ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-
-    ScriptContext pipeContext = new SimpleScriptContext();
-
-    public static final String PATH_BINDING = "path";
 
     public ContainerPipe(Plumber plumber, Resource resource) throws Exception{
         super(plumber, resource);
@@ -77,110 +63,13 @@ public class ContainerPipe extends BasePipe {
                 log.error("configured pipe {} is either not registered, or not computable by the plumber", pipeResource.getPath());
             } else {
                 pipe.setParent(this);
+                pipe.setBindings(bindings);
                 pipes.put(pipe.getName(), pipe);
                 pipeList.add(pipe);
                 reversePipeList.add(pipe);
             }
         }
         Collections.reverse(reversePipeList);
-
-        engine.setContext(pipeContext);
-
-        //add path bindings where path.MyPipe will give MyPipe current resource path
-        getBindings().put(PATH_BINDING, pathBindings);
-
-        //additional bindings (global variables to use in child pipes expressions)
-        Resource additionalBindings = resource.getChild(NN_ADDITIONALBINDINGS);
-        if (additionalBindings != null) {
-            ValueMap bindings = additionalBindings.adaptTo(ValueMap.class);
-            addBindings(bindings);
-        }
-
-        Resource scriptsResource = resource.getChild(PN_ADDITIONALSCRIPTS);
-        if (scriptsResource != null) {
-            String[] scripts = scriptsResource.adaptTo(String[].class);
-            if (scripts != null) {
-                for (String script : scripts){
-                    addScript(script);
-                }
-            }
-        }
-    }
-
-    /**
-     * add a script file to the engine
-     * @param path
-     */
-    public void addScript(String path) {
-        Resource scriptResource = resolver.getResource(path);
-        if (scriptResource != null) {
-            InputStream is = scriptResource.adaptTo(InputStream.class);
-            if (is != null) {
-                try {
-                    engine.eval(new InputStreamReader(is), pipeContext);
-                } catch (Exception e) {
-                    log.error("unable to execute {}", path);
-                }
-            }
-        }
-    }
-
-    /**
-     * adds additional bindings (global variables to use in child pipes expressions)
-     * @param bindings
-     */
-    public void addBindings(Map bindings) {
-        log.info("Adding bindings {}", bindings);
-        getBindings().putAll(bindings);
-    }
-
-    public void addBinding(String name, Object value){
-        getBindings().put(name, value);
-    }
-
-    public Bindings getBindings() {
-        return pipeContext.getBindings(ScriptContext.ENGINE_SCOPE);
-    }
-
-    /**
-     * Expression is a function of variables from execution context, that
-     * we implement here as a String
-     * @param expr
-     * @return
-     */
-    public String instantiateExpression(String expr){
-        try {
-            return (String)engine.eval(expr, pipeContext);
-        } catch (ScriptException e) {
-            log.error("Unable to evaluate the script", e);
-        }
-        return expr;
-    }
-
-    /**
-     * Instantiate object from expression
-     * @param expr
-     * @return
-     */
-    public Object instantiateObject(String expr){
-        try {
-            Object result = engine.eval(expr, pipeContext);
-            if (! result.getClass().getName().startsWith("java.lang.")) {
-                //special case of the date in which case jdk.nashorn.api.scripting.ScriptObjectMirror will
-                //be returned
-                JsDate jsDate = ((Invocable) engine).getInterface(result, JsDate.class);
-                if (jsDate != null ) {
-                    Date date = new Date(jsDate.getTime() + jsDate.getTimezoneOffset() * 60 * 1000);
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(date);
-                    return cal;
-                }
-            }
-            return result;
-        } catch (ScriptException e) {
-            log.error("Unable to evaluate the script for expr {} ", expr, e);
-        }
-        return expr;
     }
 
     @Override
@@ -196,28 +85,6 @@ public class ContainerPipe extends BasePipe {
     @Override
     public Iterator<Resource> getOutput()  {
         return new ContainerResourceIterator(this);
-    }
-
-    /**
-     * Update current resource of a given pipe, and appropriate binding
-     * @param pipe
-     * @param resource
-     */
-    public void updateBindings(Pipe pipe, Resource resource) {
-        outputResources.put(pipe.getName(), resource);
-        if (resource != null) {
-            pathBindings.put(pipe.getName(), resource.getPath());
-        }
-        addBinding(pipe.getName(), pipe.getOutputBinding());
-    }
-
-    /**
-     *
-     * @param name
-     * @return
-     */
-    public Resource getExecutedResource(String name) {
-        return outputResources.get(name);
     }
 
     /**
@@ -253,7 +120,7 @@ public class ContainerPipe extends BasePipe {
     }
 
     public Resource getOuputResource() {
-        return getExecutedResource(getLastPipe().getName());
+        return bindings.getExecutedResource(getLastPipe().getName());
     }
 
     /**
@@ -271,12 +138,15 @@ public class ContainerPipe extends BasePipe {
          */
         ContainerPipe container;
 
+        PipeBindings bindings;
+
         boolean computedCursor = false;
         boolean hasNext = false;
         int cursor = 0;
 
         ContainerResourceIterator(ContainerPipe containerPipe) {
             container = containerPipe;
+            bindings = container.bindings;
             iterators = new HashMap<>();
             Pipe firstPipe = container.getFirstPipe();
             //we initialize the first iterator the only one not to be updated
@@ -297,7 +167,7 @@ public class ContainerPipe extends BasePipe {
                 // anymore, stop.
                 while (it.hasNext() && cursor < container.pipeList.size() - 1) {
                     Resource resource = it.next();
-                    container.updateBindings(currentPipe, resource);
+                    bindings.updateBindings(currentPipe, resource);
                     //now we update the following pipe output with that new context
                     Pipe nextPipe = container.pipeList.get(++cursor);
                     iterators.put(nextPipe, nextPipe.getOutput());
@@ -338,7 +208,7 @@ public class ContainerPipe extends BasePipe {
                 computedCursor = false;
                 hasNext = false;
                 Resource resource =  iterators.get(container.getLastPipe()).next();
-                container.updateBindings(container.getLastPipe(), resource);
+                bindings.updateBindings(container.getLastPipe(), resource);
                 return resource;
             }
             return null;
@@ -348,14 +218,6 @@ public class ContainerPipe extends BasePipe {
         public void remove() {
 
         }
-    }
-
-    /**
-     * interface mapping a javascript date
-     */
-    public interface JsDate {
-        long getTime();
-        int getTimezoneOffset();
     }
 
 }

@@ -89,6 +89,17 @@ public interface Pipe {
     Object getOutputBinding();
 
     /**
+     * returns the pipe's bindings
+     * @return
+     */
+    PipeBindings getBindings();
+
+    /**
+     * set the pipe's bindings
+     */
+    void setBindings(PipeBindings bindings);
+
+    /**
      * Executes the pipe, can be contained in a parent or not
      * @return
      */
