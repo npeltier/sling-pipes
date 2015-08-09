@@ -19,8 +19,7 @@ getInput  +---+---+   getOutput
 A sling pipe is essentially a sling resource stream:
 * it provides an output as a sling resource iterator
 * it gets its input either from a configured path, either, if its chained (see container pipes below), from another pipe's output
-* if the pipe is contained, it can also provide an output binding that can be reused in the way further pipes will computes their
- inputs or outputs.
+* a pipe can have dynamic inputs using javascript bindings, and outputing his own bindings
  
 At the moment, there are 3 types of pipe to consider:
 * "read" pipes, that will just output a set of resource depending on the input
@@ -33,10 +32,12 @@ A `Plumber` osgi service is provided to help getting & executing pipes.
 ## Registered Pipes
 a pipe configuration is a jcr node, with:
 * `sling:resourceType` property, which must be a pipe type registered by the plumber 
-* `name` property, that will be used by a container pipe as an id, and will be the key for the output bindings (default value being a value map of the 
+* `name` property, that will be used in bindings as an id, and will be the key for the output bindings (default value being a value map of the 
 current output resource). Note that the node name will be used in case no name is provided.
 * `path` property, if configured, will override upstream's pipe output as an input.
 * `expr` property, expression through which the pipe will execute (depending on the type) 
+* `additionalBinding` is a node you can add to set "global" bindings (property=value) in pipe execution
+* `additionalScripts` is a multi value property to declare scripts that can be reused in expressions
 * `conf` optional child node that contains addition configuration of the pipe (depending on the type)
 
 ### Base pipe
@@ -44,10 +45,8 @@ rather dummy pipe, outputs what is in input (so what is configured in path). Han
 * `sling:resourceType` is `slingPipes/base`
 
 ### Container Pipe
-assemble a sequence of pipes, with its binding context pipes write to
+assemble a sequence of pipes
 * `sling:resourceType` is `slingPipes/container`
-* `additionalBinding` is a node you can add to set "global" bindings (property=value) in pipe execution
-* `additionalScripts` is a multi value property to declare scripts that can be reused in expressions
 * `conf` node contains child pipes' configurations, that will be configured in the order they are found (note you should use sling:OrderedFolder)
 
 ### SlingQuery Pipe
@@ -87,10 +86,11 @@ execute the pipe referenced in path property
 * `sling:resourceType` is `slingPipes/reference`
 * `path` path of the referenced pipe
 
-## Making configuration dynamic with bindings
-in order to make things interesting, most of the configurations are javascript expressions: when a pipe 
-is in a container pipe, a valid js expression reusing other pipes names of the container as bindings can be used.
-Following configuration are evaluated:
+## Making configuration dynamic with pipe bindings
+in order to make things interesting, most of the configurations are javascript expressions, hence valid js expressions 
+reusing bindings (from configuration, or other pipes).
+
+Following configurations are evaluated:
 * `path`
 * `expr`
 * name/value of each property of a write pipe
@@ -98,8 +98,8 @@ Following configuration are evaluated:
 you can use name of previous pipes in the pipe container, or the special binding `path`, where `path.previousPipe` 
 is the path of the current resource of previous pipe named `previousPipe`
 
-global bindings can be set at pipe execution, external scripts can be added to the execution as well (see container pipe
- configuration)
+global bindings can be set at pipe execution, external scripts can be added to the execution as well (see pipe
+ configurations)
 
 ## How to execute a pipe
 for now it's possible to execute Pipes through GET (read) or POST (read/write) commands:

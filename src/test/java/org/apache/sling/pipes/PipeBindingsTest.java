@@ -38,7 +38,7 @@ public class PipeBindingsTest extends AbstractPipeTest {
         super.setup();
         context.load().json("/container.json", PATH_PIPE);
     }
-    
+
     @Test
     public void testInstantiateExpression() throws Exception {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + ContainerPipeTest.NN_DUMMYTREE);
