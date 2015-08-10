@@ -149,9 +149,7 @@ public class BasePipe implements Pipe {
      * @return
      */
     public Iterator<Resource> getOutput(){
-        List<Resource> resourceList = new ArrayList<>();
-        resourceList.add(getInput());
-        return resourceList.iterator();
+        return Collections.singleton(getInput()).iterator();
     }
 
     /**
