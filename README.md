@@ -156,6 +156,9 @@ will returns something similar to
 [{'user':'John Smith','path':'/home/users/q/q123jk1UAZS'},{'user':'John Doe','path':'/home/users/q/q153jk1UAZS'}]
 ```
 
+### Request Parameter `dryRun`
+if parameter dryRun is set to true, and the executed pipe is supposed to modify content, it will log (at best it can) the change it *would* have done, without doing anything
+
 ## sample configurations 
 
 ### slingQuery | write
