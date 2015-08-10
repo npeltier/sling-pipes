@@ -42,7 +42,11 @@ import java.util.Set;
  * it can also be launched against a container pipe resource directly (no need for path parameter)
  *
  */
-@SlingServlet(resourceTypes = {Plumber.RESOURCE_TYPE, ContainerPipe.RESOURCE_TYPE}, methods={"GET","POST"}, extensions = {"json"})
+@SlingServlet(resourceTypes = {Plumber.RESOURCE_TYPE,
+        ContainerPipe.RESOURCE_TYPE,
+        AuthorizablePipe.RESOURCE_TYPE,
+        WritePipe.RESOURCE_TYPE,
+        SlingQueryPipe.RESOURCE_TYPE}, methods={"GET","POST"}, extensions = {"json"})
 public class PlumberServlet extends SlingAllMethodsServlet {
     Logger log = LoggerFactory.getLogger(this.getClass());
 
