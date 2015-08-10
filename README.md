@@ -72,9 +72,14 @@ iterates through values of input multi value property and write them to bindings
 * `path` should be the path of a mv property
 
 ### AuthorizablePipe
-retrieve authorizable resource corresponding to the id passed in epression
+retrieve authorizable resource corresponding to the id passed in expression, or if not found (or void expression),
+bu the input path, output the found authorizable's resource
 * `sling:resourceType` is `slingPipes/authorizable`
-* `expr` should be an authorizable id
+* `expr` should be an authorizable id, or void (but then input should be an authorizable)
+* `autoCreateGroup` (boolean) if autorizable id is here, but the authorizable not present, then create group with given id
+* `addMembers` (stringified json array) if authorizable is a group, add instanciated members to it
+* `addToGroup` (expression) add found authorizable to instanciated group
+* `bindMembers` (boolean) if found authorizable is a group, bind the members
 
 ### XPathPipe
 retrieve resources resulting of an xpath query
