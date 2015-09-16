@@ -111,7 +111,7 @@ public class PlumberImpl implements Plumber {
             pipe.getBindings().addBindings(additionalBindings);
         }
 
-        log.info("[{}] execution starts", pipe);
+        log.info("[{}] execution starts, save ({})", pipe, save);
         Set<String> set = new HashSet<>();
         for (Iterator<Resource> it = pipe.getOutput(); it.hasNext();){
             Resource resource = it.next();
@@ -120,7 +120,7 @@ public class PlumberImpl implements Plumber {
                 set.add(resource.getPath());
             }
         }
-        if  (pipe.modifiesContent() && save && resolver.hasChanges() && pipe.isDryRun()){
+        if  (pipe.modifiesContent() && save && resolver.hasChanges() && !pipe.isDryRun()){
             log.info("[{}] saving changes...", pipe.getName());
             resolver.commit();
             if (distributor != null && StringUtils.isNotBlank(pipe.getDistributionAgent())) {

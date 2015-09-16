@@ -43,7 +43,7 @@ public class BasePipe implements Pipe {
     protected String distributionAgent;
     protected PipeBindings bindings;
 
-    protected Boolean dryRun;
+    protected Boolean dryRunObject;
 
     @Override
     public ContainerPipe getParent() {
@@ -56,6 +56,7 @@ public class BasePipe implements Pipe {
     }
 
     protected Plumber plumber;
+
     private String name;
 
     public BasePipe(Plumber plumber, Resource resource) throws Exception {
@@ -69,15 +70,16 @@ public class BasePipe implements Pipe {
     }
 
     public boolean isDryRun() {
-        if (dryRun == null) {
+        if (dryRunObject == null) {
             Object run =  bindings.isBindingDefined(DRYRUN) ? bindings.instantiateObject(DRYRUN) : false;
-            dryRun =  run != null && run instanceof Boolean ? (Boolean)run : false;
+            dryRunObject =  run != null && run instanceof Boolean ? (Boolean)run : false;
         }
+        boolean dryRun = dryRunObject != null ? dryRunObject : false;
         return dryRun;
     }
 
     public String toString() {
-        return name + " " + "(path: " + resource.getPath() + ", dryRun: " + dryRun + ", modifiesContent: " + modifiesContent() + ")";
+        return name + " " + "(path: " + resource.getPath() + ", dryRun: " + isDryRun() + ", modifiesContent: " + modifiesContent() + ")";
     }
 
     @Override
