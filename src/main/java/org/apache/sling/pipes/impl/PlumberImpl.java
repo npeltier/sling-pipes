@@ -38,6 +38,7 @@ import org.apache.sling.pipes.MultiPropertyPipe;
 import org.apache.sling.pipes.Pipe;
 import org.apache.sling.pipes.Plumber;
 import org.apache.sling.pipes.ReferencePipe;
+import org.apache.sling.pipes.RemovePipe;
 import org.apache.sling.pipes.SlingQueryPipe;
 import org.apache.sling.pipes.WritePipe;
 import org.apache.sling.pipes.XPathPipe;
@@ -75,6 +76,8 @@ public class PlumberImpl implements Plumber {
         registerPipe(AuthorizablePipe.RESOURCE_TYPE, AuthorizablePipe.class);
         registerPipe(XPathPipe.RESOURCE_TYPE, XPathPipe.class);
         registerPipe(ReferencePipe.RESOURCE_TYPE, ReferencePipe.class);
+        registerPipe(RemovePipe.RESOURCE_TYPE, RemovePipe.class);
+
     }
 
     @Override

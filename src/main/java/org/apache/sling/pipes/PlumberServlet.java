@@ -46,7 +46,9 @@ import java.util.Set;
         ContainerPipe.RESOURCE_TYPE,
         AuthorizablePipe.RESOURCE_TYPE,
         WritePipe.RESOURCE_TYPE,
-        SlingQueryPipe.RESOURCE_TYPE}, methods={"GET","POST"}, extensions = {"json"})
+        SlingQueryPipe.RESOURCE_TYPE},
+        methods={"GET","POST"},
+        extensions = {"json"})
 public class PlumberServlet extends SlingAllMethodsServlet {
     Logger log = LoggerFactory.getLogger(this.getClass());
 

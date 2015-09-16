@@ -32,6 +32,8 @@ public class AbstractPipeTest {
 
     protected static final String PATH_PIPE = "/etc/pipe";
     protected static final String PATH_FRUITS = "/content/fruits";
+    protected static final String PATH_BANANA = PATH_FRUITS + "/banana";
+    protected static final String PATH_APPLE = PATH_FRUITS + "/apple";
     protected static final String NN_SIMPLE = "simple";
     Plumber plumber;
 

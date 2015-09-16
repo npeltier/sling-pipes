@@ -91,6 +91,11 @@ execute the pipe referenced in path property
 * `sling:resourceType` is `slingPipes/reference`
 * `path` path of the referenced pipe
 
+### RemovePipe
+removes the input resource, returns the parent, regardless of the resource being a node, or
+a property
+* `sling:resourceType` is `slingPipes/rm`
+
 ## Making configuration dynamic with pipe bindings
 in order to make things interesting, most of the configurations are javascript expressions, hence valid js expressions 
 reusing bindings (from configuration, or other pipes).
