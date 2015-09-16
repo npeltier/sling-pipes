@@ -19,7 +19,6 @@ package org.apache.sling.pipes;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.jcr.Node;
