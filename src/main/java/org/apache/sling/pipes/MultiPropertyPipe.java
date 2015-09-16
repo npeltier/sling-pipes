@@ -85,7 +85,7 @@ public class MultiPropertyPipe extends BasePipe {
                 }
                 itValue = Arrays.asList(mvProperty.getValues()).iterator();
             } catch (Exception e) {
-                logger.warn("unable to setup mv iterator, will return nothing", e);
+                logger.warn("unable to setup mv iterator for resource, will return nothing", e);
             }
         }
 

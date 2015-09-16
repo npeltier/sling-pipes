@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import java.util.List;
  * provides generic utilities for a pipe
  */
 public class BasePipe implements Pipe {
+    Logger logger = LoggerFactory.getLogger(BasePipe.class);
     public static final String RESOURCE_TYPE = "slingPipes/base";
     protected static final String DRYRUN = "dryRun";
 
@@ -67,7 +70,7 @@ public class BasePipe implements Pipe {
 
     public boolean isDryRun() {
         if (dryRun == null) {
-            Object run = bindings.instantiateObject(DRYRUN);
+            Object run =  bindings.isBindingDefined(DRYRUN) ? bindings.instantiateObject(DRYRUN) : false;
             dryRun =  run != null && run instanceof Boolean ? (Boolean)run : false;
         }
         return dryRun;
@@ -102,12 +105,15 @@ public class BasePipe implements Pipe {
 
     @Override
     public Resource getConfiguredResource() {
-        Resource resource = null;
+        Resource configuredResource = null;
         String path = getPath();
         if (StringUtils.isNotBlank(path)){
-            resource = resolver.getResource(path);
+            configuredResource = resolver.getResource(path);
+            if (configuredResource == null) {
+                logger.warn("configured path {} is not found, expect some troubles...", path);
+            }
         }
-        return resource;
+        return configuredResource;
     }
 
     @Override

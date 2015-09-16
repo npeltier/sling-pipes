@@ -126,6 +126,10 @@ public class PipeBindings {
         getBindings().put(name, value);
     }
 
+    public boolean isBindingDefined(String name){
+        return getBindings().containsKey(name);
+    }
+
     public Bindings getBindings() {
         return scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
     }
