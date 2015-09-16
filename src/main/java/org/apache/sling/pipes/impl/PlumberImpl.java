@@ -111,7 +111,7 @@ public class PlumberImpl implements Plumber {
             pipe.getBindings().addBindings(additionalBindings);
         }
 
-        log.info("[{}] execution starts", pipe.getName());
+        log.info("[{}] execution starts", pipe);
         Set<String> set = new HashSet<>();
         for (Iterator<Resource> it = pipe.getOutput(); it.hasNext();){
             Resource resource = it.next();

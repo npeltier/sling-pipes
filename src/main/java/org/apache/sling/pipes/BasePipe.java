@@ -76,6 +76,10 @@ public class BasePipe implements Pipe {
         return dryRun;
     }
 
+    public String toString() {
+        return name + " " + "(path: " + resource.getPath() + ", dryRun: " + dryRun + ", modifiesContent: " + modifiesContent() + ")";
+    }
+
     @Override
     public boolean modifiesContent() {
         return false;
