@@ -66,6 +66,11 @@ feeds bindings with remote json
 * `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput.
 An empty url or a failing url will cut the pipe at that given place.
 
+### MovePipe
+JCR move of current input to target path
+* `sling:resourceType` is `slingPipes/mv`
+* `expr` target path, note that parent path must exists
+
 ### MultiPropertyPipe
 iterates through values of input multi value property and write them to bindings 
 * `sling:resourceType` is `slingPipes/multiProperty`
