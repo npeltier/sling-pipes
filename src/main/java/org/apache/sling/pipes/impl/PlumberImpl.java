@@ -33,6 +33,7 @@ import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.pipes.AuthorizablePipe;
 import org.apache.sling.pipes.BasePipe;
 import org.apache.sling.pipes.ContainerPipe;
+import org.apache.sling.pipes.PathPipe;
 import org.apache.sling.pipes.JsonPipe;
 import org.apache.sling.pipes.MovePipe;
 import org.apache.sling.pipes.MultiPropertyPipe;
@@ -81,6 +82,7 @@ public class PlumberImpl implements Plumber {
         registerPipe(RemovePipe.RESOURCE_TYPE, RemovePipe.class);
         registerPipe(ParentPipe.RESOURCE_TYPE, ParentPipe.class);
         registerPipe(MovePipe.RESOURCE_TYPE, MovePipe.class);
+        registerPipe(PathPipe.RESOURCE_TYPE, PathPipe.class);
     }
 
     @Override

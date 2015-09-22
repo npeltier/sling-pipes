@@ -105,6 +105,12 @@ a property
 returns the parent of input resource
 * `sling:resourceType` is `slingPipes/parent`
 
+### PathPipe
+get or create path given in expression
+* `sling:resourceType` is `slingPipes/path`
+* `nodeType` node type of the intermediate nodes to create
+* `autosave` should save at each creation (will make things slow, but sometimes you don't have choice)
+
 ## Making configuration dynamic with pipe bindings
 in order to make things interesting, most of the configurations are javascript expressions, hence valid js expressions 
 reusing bindings (from configuration, or other pipes).
