@@ -1,8 +1,7 @@
 # sling-pipes
-tool for doing extract - transform - load operations through JCR configuration
+tool for doing extract - transform - load operations through a resource tree configuration
 
-often one-shot data transformations need sample code to be written & executed. This tiny framework intends to provide ability
-to do such transformations with proven & reusable blocks called pipes, configured through a jcr tree.
+often one-shot data transformations need sample code to be written & executed. This tiny tool set intends to provide ability to do such transformations with proven & reusable blocks called pipes, streaming resources from one to the other.
 
 ## What is a pipe
 
@@ -19,11 +18,11 @@ getInput  +---+---+   getOutput
 A sling pipe is essentially a sling resource stream:
 * it provides an output as a sling resource iterator
 * it gets its input either from a configured path, either, if its chained (see container pipes below), from another pipe's output
-* a pipe can have dynamic inputs using javascript bindings, and outputing his own bindings
+* each pipe can have additional dynamic inputs using other's bindings, and outputing its own bindings
  
-At the moment, there are 3 types of pipe to consider:
-* "read" pipes, that will just output a set of resource depending on the input
-* "write" pipes (atm there is just WritePipe existing), that write to the repository, depending on configuration and output
+At the moment, there are 3 types of pipes to consider:
+* "reader" pipes, that will just output a set of resource depending on the input
+* "writer" pipes, that write to the repository, depending on configuration and output
 * "container" pipes, that contains pipes, and whose job is to chain their execution : input is the input of their first pipe,
  output is the output of the last pipe it contains.
  
@@ -40,43 +39,62 @@ current output resource). Note that the node name will be used in case no name i
 * `additionalScripts` is a multi value property to declare scripts that can be reused in expressions
 * `conf` optional child node that contains addition configuration of the pipe (depending on the type)
 
-### Base pipe
-rather dummy pipe, outputs what is in input (so what is configured in path). Handy for doing some test mostly
+### readers
+
+#### Base pipe
+rather dummy pipe, outputs what is in input (so what is configured in path). Handy for doing some test mostly, and giving basic functionalities to others that inherit from it
 * `sling:resourceType` is `slingPipes/base`
 
-### Container Pipe
-assemble a sequence of pipes
-* `sling:resourceType` is `slingPipes/container`
-* `conf` node contains child pipes' configurations, that will be configured in the order they are found (note you should use sling:OrderedFolder)
-
-### SlingQuery Pipe
+#### SlingQuery Pipe
 executes $(getInput()).children(expression)
 * `sling:resourceType` is `slingPipes/slingQuery`
 * `expr` mandatory property, contains slingQuery expression through which getInput()'s children will be computed to getOutput()
 
-### Write Pipe
-writes given properties to current input
-* `sling:resourceType` is `slingPipes/slingQuery`
-* `conf` node tree that will be copied to the current input of the pipe, each node's properties 
-names and value will be written to the input resource. Input resource will be outputed. 
-
-### JsonPipe
+#### JsonPipe
 feeds bindings with remote json
 * `sling:resourceType` is `slingPipes/json`
 * `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput.
 An empty url or a failing url will cut the pipe at that given place.
 
-### MovePipe
-JCR move of current input to target path
-* `sling:resourceType` is `slingPipes/mv`
-* `expr` target path, note that parent path must exists
-
-### MultiPropertyPipe
+#### MultiPropertyPipe
 iterates through values of input multi value property and write them to bindings 
 * `sling:resourceType` is `slingPipes/multiProperty`
 * `path` should be the path of a mv property
 
-### AuthorizablePipe
+#### XPathPipe
+retrieve resources resulting of an xpath query
+* `sling:resourceType` is `slingPipes/xpath`
+* `expr` should be a valid xpath query
+
+#### ParentPipe
+outputs the parent resource of input resource
+* `sling:resourceType` is `slingPipes/parent`
+
+### containers
+#### Container Pipe
+assemble a sequence of pipes
+* `sling:resourceType` is `slingPipes/container`
+* `conf` node contains child pipes' configurations, that will be configured in the order they are found (note you should use sling:OrderedFolder)
+
+#### ReferencePipe
+execute the pipe referenced in path property
+* `sling:resourceType` is `slingPipes/reference`
+* `path` path of the referenced pipe
+
+### writers
+
+#### Write Pipe
+writes given properties to current input
+* `sling:resourceType` is `slingPipes/slingQuery`
+* `conf` node tree that will be copied to the current input of the pipe, each node's properties 
+names and value will be written to the input resource. Input resource will be outputed. 
+
+#### MovePipe
+JCR move of current input to target path
+* `sling:resourceType` is `slingPipes/mv`
+* `expr` target path, note that parent path must exists
+
+#### AuthorizablePipe
 retrieve authorizable resource corresponding to the id passed in expression, or if not found (or void expression),
 bu the input path, output the found authorizable's resource
 * `sling:resourceType` is `slingPipes/authorizable`
@@ -86,26 +104,12 @@ bu the input path, output the found authorizable's resource
 * `addToGroup` (expression) add found authorizable to instanciated group
 * `bindMembers` (boolean) if found authorizable is a group, bind the members
 
-### XPathPipe
-retrieve resources resulting of an xpath query
-* `sling:resourceType` is `slingPipes/xpath`
-* `expr` should be a valid xpath query
-
-### ReferencePipe
-execute the pipe referenced in path property
-* `sling:resourceType` is `slingPipes/reference`
-* `path` path of the referenced pipe
-
-### RemovePipe
+#### RemovePipe
 removes the input resource, returns the parent, regardless of the resource being a node, or
 a property
 * `sling:resourceType` is `slingPipes/rm`
 
-### ParentPipe
-returns the parent of input resource
-* `sling:resourceType` is `slingPipes/parent`
-
-### PathPipe
+#### PathPipe
 get or create path given in expression
 * `sling:resourceType` is `slingPipes/path`
 * `nodeType` node type of the intermediate nodes to create
