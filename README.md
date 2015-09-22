@@ -101,6 +101,10 @@ removes the input resource, returns the parent, regardless of the resource being
 a property
 * `sling:resourceType` is `slingPipes/rm`
 
+### ParentPipe
+returns the parent of input resource
+* `sling:resourceType` is `slingPipes/parent`
+
 ## Making configuration dynamic with pipe bindings
 in order to make things interesting, most of the configurations are javascript expressions, hence valid js expressions 
 reusing bindings (from configuration, or other pipes).
@@ -282,6 +286,32 @@ this use case is for completing repository profiles with external system's data 
       }
     }
   }
+```
+
+### xpath | parent | rm
+```
+{
+  "jcr:primaryType": "nt:unstructured",
+  "jcr:description": "this pipe removes user with bad property in their profile",
+  "sling:resourceType": "slingPipes/container",
+  "conf": {
+    "jcr:primaryType": "sling:OrderedFolder",
+    "profile": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "expr": "'/jcr:root/home/users//element(profile,nt:unstructured)[@bad]'",
+      "jcr:description": "query all user profile nodes with bad properties",
+      "sling:resourceType": "slingPipes/xpath"
+      },
+    "parent": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "sling:resourceType": "slingPipes/parent"
+      },
+    "rm": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "sling:resourceType": "slingPipes/rm",
+      }
+   }
+}
 ```
 
 some other samples are in https://github.com/npeltier/sling-pipes/tree/master/src/test/
