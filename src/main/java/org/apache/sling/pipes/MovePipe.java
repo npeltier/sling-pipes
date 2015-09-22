@@ -50,11 +50,16 @@ public class MovePipe extends BasePipe {
         if (resource != null && resource.adaptTo(Node.class) != null) {
             String targetPath = getExpr();
             try {
-                logger.info("moving resource {} to {}", resource.getPath(), targetPath);
-                if (!isDryRun()) {
-                    resolver.adaptTo(Session.class).move(resource.getPath(), targetPath);
-                    Resource target = resolver.getResource(targetPath);
-                    output = Collections.singleton(target).iterator();
+                Session session = resolver.adaptTo(Session.class);
+                if (session.itemExists(targetPath)){
+                    logger.warn("{} already exists, nothing will be done here, nothing outputed");
+                } else {
+                    logger.info("moving resource {} to {}", resource.getPath(), targetPath);
+                    if (!isDryRun()) {
+                        session.move(resource.getPath(), targetPath);
+                        Resource target = resolver.getResource(targetPath);
+                        output = Collections.singleton(target).iterator();
+                    }
                 }
             } catch (RepositoryException e){
                 logger.error("unable to move the resource", e);
