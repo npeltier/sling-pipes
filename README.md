@@ -67,7 +67,7 @@ feeds bindings with remote json
 An empty url or a failing url will cut the pipe at that given place.
 
 ### MovePipe
-JCR move of current input to target path
+JCR move of current input to target path, can be a node or a property
 * `sling:resourceType` is `slingPipes/mv`
 * `expr` target path, note that parent path must exists
 

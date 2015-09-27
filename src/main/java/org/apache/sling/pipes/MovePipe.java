@@ -20,7 +20,9 @@ import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Item;
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.util.Collections;
@@ -47,7 +49,7 @@ public class MovePipe extends BasePipe {
     public Iterator<Resource> getOutput() {
         Iterator<Resource> output = Collections.emptyIterator();
         Resource resource = getInput();
-        if (resource != null && resource.adaptTo(Node.class) != null) {
+        if (resource != null && resource.adaptTo(Item.class) != null) {
             String targetPath = getExpr();
             try {
                 Session session = resolver.adaptTo(Session.class);
@@ -56,7 +58,22 @@ public class MovePipe extends BasePipe {
                 } else {
                     logger.info("moving resource {} to {}", resource.getPath(), targetPath);
                     if (!isDryRun()) {
-                        session.move(resource.getPath(), targetPath);
+                        if (resource.adaptTo(Node.class) != null) {
+                            session.move(resource.getPath(), targetPath);
+                        } else {
+                            int lastLevel = targetPath.lastIndexOf("/");
+                            // /a/b/c will get cut in /a/b for parent path, and c for name
+                            String parentPath = targetPath.substring(0, lastLevel);
+                            String name = targetPath.substring(lastLevel + 1, targetPath.length());
+                            Property sourceProperty = resource.adaptTo(Property.class);
+                            Node destNode = session.getNode(parentPath);
+                            if (sourceProperty.isMultiple()){
+                                destNode.setProperty(name, sourceProperty.getValues(), sourceProperty.getType());
+                            } else {
+                                destNode.setProperty(name, sourceProperty.getValue(), sourceProperty.getType());
+                            }
+                            sourceProperty.remove();
+                        }
                         Resource target = resolver.getResource(targetPath);
                         output = Collections.singleton(target).iterator();
                     }

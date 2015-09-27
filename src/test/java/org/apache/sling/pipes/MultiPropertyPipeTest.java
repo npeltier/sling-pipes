@@ -44,12 +44,12 @@ public class MultiPropertyPipeTest extends AbstractPipeTest {
         Iterator<Resource> outputs = pipe.getOutput();
         Resource resource = outputs.next();
         assertNotNull(resource);
-        assertEquals("Resource path should be the input", PATH_FRUITS + "/index", resource.getPath());
+        assertEquals("Resource path should be the input", PATH_FRUITS + PN_INDEX, resource.getPath());
         String fruit = (String)pipe.getOutputBinding();
         assertEquals("First resource binding should be apple", "apple", fruit);
         resource = outputs.next();
         assertNotNull(resource);
-        assertEquals("Resource path should be the input", PATH_FRUITS + "/index", resource.getPath());
+        assertEquals("Resource path should be the input", PATH_FRUITS + PN_INDEX, resource.getPath());
         fruit = (String)pipe.getOutputBinding();
         assertEquals("Second resource binding should be banana", "banana", fruit);
     }
