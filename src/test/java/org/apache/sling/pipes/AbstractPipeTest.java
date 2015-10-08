@@ -35,6 +35,7 @@ public class AbstractPipeTest {
     protected static final String PATH_BANANA = PATH_FRUITS + "/banana";
     protected static final String PATH_APPLE = PATH_FRUITS + "/apple";
     protected static final String NN_SIMPLE = "simple";
+    protected static final String NN_COMPLEX = "complex";
     protected static final String PN_INDEX = "/index";
     Plumber plumber;
 

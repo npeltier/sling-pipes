@@ -45,7 +45,6 @@ public class WritePipe extends BasePipe {
     String resourceExpression;
     Pattern addPatch = Pattern.compile("\\+\\[(.*)\\]");
     Pattern multi = Pattern.compile("\\[(.*)\\]");
-    public static final List<String> IGNORED_PROPERTIES = Arrays.asList(new String[]{"jcr:lastModified", "jcr:primaryType", "jcr:created", "jcr:createdBy"});
 
     public WritePipe(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);

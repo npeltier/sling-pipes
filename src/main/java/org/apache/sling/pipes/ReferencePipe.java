@@ -67,7 +67,7 @@ public class ReferencePipe extends BasePipe {
     }
 
     @Override
-    public Resource getConfiguredResource() {
-        return reference.getConfiguredResource();
+    public Resource getConfiguredInput() {
+        return reference.getConfiguredInput();
     }
 }

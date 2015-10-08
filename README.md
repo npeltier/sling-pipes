@@ -114,6 +114,8 @@ bu the input path, output the found authorizable's resource
 removes the input resource, returns the parent, regardless of the resource being a node, or
 a property
 * `sling:resourceType` is `slingPipes/rm`
+* `conf` node tree that will be used to filter relative properties & subtrees to the current resource to remove.
+A subnode is considered to be removed if it has no property configured, nore any child.
 
 #### PathPipe
 get or create path given in expression

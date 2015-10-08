@@ -79,7 +79,7 @@ public interface Pipe {
      * Get the pipe's optional configured resource or null
      * @return
      */
-    Resource getConfiguredResource();
+    Resource getConfiguredInput();
 
     /**
      * Get pipe current's resource *before* next execution, meaning either the

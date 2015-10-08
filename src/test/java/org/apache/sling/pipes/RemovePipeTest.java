@@ -18,6 +18,7 @@ package org.apache.sling.pipes;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class RemovePipeTest extends AbstractPipeTest{
     @Test
     public void testRemoveNode() throws Exception{
         ResourceResolver resolver = context.resourceResolver();
-        Resource resource = resolver.getResource(PATH_PIPE);
+        Resource resource = resolver.getResource(PATH_PIPE + "/" + NN_SIMPLE);
         resource.adaptTo(Node.class).setProperty(Pipe.PN_PATH, PATH_BANANA);
         resolver.commit();
         Pipe pipe = plumber.getPipe(resource);
@@ -55,7 +56,7 @@ public class RemovePipeTest extends AbstractPipeTest{
     public void testRemoveProperty() throws Exception {
         String indexPath = PATH_FRUITS + "/index";
         ResourceResolver resolver = context.resourceResolver();
-        Resource resource = resolver.getResource(PATH_PIPE);
+        Resource resource = resolver.getResource(PATH_PIPE + "/" + NN_SIMPLE);
         resource.adaptTo(Node.class).setProperty(Pipe.PN_PATH, indexPath);
         resolver.commit();
         Pipe pipe = plumber.getPipe(resource);
@@ -66,5 +67,19 @@ public class RemovePipeTest extends AbstractPipeTest{
         assertNull("Index property should not be here", resolver.getResource(indexPath));
         assertNotNull("Apple should still be here", resolver.getResource(PATH_APPLE));
         assertNotNull("Banana should still be here", resolver.getResource(PATH_BANANA));
+    }
+
+    @Test
+    public void testComplexRemove() throws Exception {
+        ResourceResolver resolver = context.resourceResolver();
+        Resource resource = resolver.getResource(PATH_PIPE + "/" + NN_COMPLEX);
+        Pipe pipe = plumber.getPipe(resource);
+        assertTrue("resource should be solved", pipe.getOutput().hasNext());
+        pipe.getOutput().next();
+        resolver.commit();
+        assertNull("isnota carrot should be removed", resolver.getResource(PATH_APPLE + "/isnota/carrot"));
+        Resource isNotAPea = resolver.getResource(PATH_APPLE + "/isnota/pea");
+        assertNotNull("isnota pea should not be removed", isNotAPea);
+        assertFalse("isnota pea color property should not be here", isNotAPea.adaptTo(ValueMap.class).containsKey("color"));
     }
 }

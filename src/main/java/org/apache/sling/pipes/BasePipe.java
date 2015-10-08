@@ -23,7 +23,7 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +42,10 @@ public class BasePipe implements Pipe {
     protected ContainerPipe parent;
     protected String distributionAgent;
     protected PipeBindings bindings;
+
+    // used by pipes using complex JCR configurations
+    public static final List<String> IGNORED_PROPERTIES = Arrays.asList(new String[]{"jcr:lastModified", "jcr:primaryType", "jcr:created", "jcr:createdBy"});
+
 
     protected Boolean dryRunObject;
 
@@ -110,21 +114,21 @@ public class BasePipe implements Pipe {
     }
 
     @Override
-    public Resource getConfiguredResource() {
-        Resource configuredResource = null;
+    public Resource getConfiguredInput() {
+        Resource configuredInput = null;
         String path = getPath();
         if (StringUtils.isNotBlank(path)){
-            configuredResource = resolver.getResource(path);
-            if (configuredResource == null) {
+            configuredInput = resolver.getResource(path);
+            if (configuredInput == null) {
                 logger.warn("configured path {} is not found, expect some troubles...", path);
             }
         }
-        return configuredResource;
+        return configuredInput;
     }
 
     @Override
     public Resource getInput() {
-        Resource resource = getConfiguredResource();
+        Resource resource = getConfiguredInput();
         if (resource == null && parent != null){
             Pipe previousPipe = parent.getPreviousPipe(this);
             if (previousPipe != null) {

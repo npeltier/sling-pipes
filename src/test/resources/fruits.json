@@ -7,6 +7,7 @@
       "jcr:primaryType":"nt:unstructured",
       "pea":{
         "jcr:primaryType":"nt:unstructured",
+        "color":"green",
         "buttheyhavesamecolor":{
           "jcr:primaryType":"nt:unstructured"
         }
