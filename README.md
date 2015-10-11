@@ -31,8 +31,7 @@ A `Plumber` osgi service is provided to help getting & executing pipes.
 ## Registered Pipes
 a pipe configuration is a jcr node, with:
 * `sling:resourceType` property, which must be a pipe type registered by the plumber 
-* `name` property, that will be used in bindings as an id, and will be the key for the output bindings (default value being a value map of the 
-current output resource). Note that the node name will be used in case no name is provided.
+* `name` property, that will be used in bindings as an id, and will be the key for the output bindings (default value being a value map of the current output resource). Note that the node name will be used in case no name is provided.
 * `path` property, if configured, will override upstream's pipe output as an input.
 * `expr` property, expression through which the pipe will execute (depending on the type) 
 * `additionalBinding` is a node you can add to set "global" bindings (property=value) in pipe execution
@@ -54,7 +53,7 @@ executes $(getInput()).children(expression)
 feeds bindings with remote json
 * `sling:resourceType` is `slingPipes/json`
 * `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput.
-An empty url or a failing url will cut the pipe at that given place.
+An empty url or a failing url will block the pipe at that given place.
 
 #### MultiPropertyPipe
 iterates through values of input multi value property and write them to bindings 
@@ -65,6 +64,22 @@ iterates through values of input multi value property and write them to bindings
 retrieve resources resulting of an xpath query
 * `sling:resourceType` is `slingPipes/xpath`
 * `expr` should be a valid xpath query
+
+### JsonPipe
+feeds bindings with remote json
+* `sling:resourceType` is `slingPipes/json`
+* `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput.
+An empty url or a failing url will block the pipe at that given place.
+
+#### AuthorizablePipe
+retrieve authorizable resource corresponding to the id passed in expression, or if not found (or void expression),
+from the input path, output the found authorizable's resource
+* `sling:resourceType` is `slingPipes/authorizable`
+* `expr` should be an authorizable id, or void (but then input should be an authorizable)
+* `autoCreateGroup` (boolean) if autorizable id is here, but the authorizable not present, then create group with given id (in that case, considered as a write pipe)
+* `addMembers` (stringified json array) if authorizable is a group, add instanciated members to it (in that case, considered as a write pipe)
+* `addToGroup` (expression) add found authorizable to instanciated group (in that case, considered as a write pipe)
+* `bindMembers` (boolean) if found authorizable is a group, bind the members (in that case, considered as a write pipe)
 
 #### ParentPipe
 outputs the parent resource of input resource
@@ -96,26 +111,10 @@ writes given properties to current input
 * `conf` node tree that will be copied to the current input of the pipe, each node's properties 
 names and value will be written to the input resource. Input resource will be outputed. 
 
-### JsonPipe
-feeds bindings with remote json
-* `sling:resourceType` is `slingPipes/json`
-* `expr` mandatory property contains url that will be called, the json be sent to the output bindings, getOutput = getInput.
-An empty url or a failing url will cut the pipe at that given place.
-
 ### MovePipe
 JCR move of current input to target path (can be a node or a property)
 * `sling:resourceType` is `slingPipes/mv`
 * `expr` target path, note that parent path must exists
-
-#### AuthorizablePipe
-retrieve authorizable resource corresponding to the id passed in expression, or if not found (or void expression),
-bu the input path, output the found authorizable's resource
-* `sling:resourceType` is `slingPipes/authorizable`
-* `expr` should be an authorizable id, or void (but then input should be an authorizable)
-* `autoCreateGroup` (boolean) if autorizable id is here, but the authorizable not present, then create group with given id
-* `addMembers` (stringified json array) if authorizable is a group, add instanciated members to it
-* `addToGroup` (expression) add found authorizable to instanciated group
-* `bindMembers` (boolean) if found authorizable is a group, bind the members
 
 #### RemovePipe
 removes the input resource, returns the parent, regardless of the resource being a node, or
@@ -131,13 +130,12 @@ get or create path given in expression
 * `autosave` should save at each creation (will make things slow, but sometimes you don't have choice)
 
 ## Making configuration dynamic with pipe bindings
-in order to make things interesting, most of the configurations are javascript template strings, hence valid js expressions 
-reusing bindings (from configuration, or other pipes).
+in order to make things interesting, most of the configurations are javascript template strings, hence valid js expressions reusing bindings (from configuration, or other pipes).
 
 Following configurations are evaluated:
 * `path`
 * `expr`
-* name/value of each property of a write pipe
+* name/value of each property of some pipes (write, remove)
 
 you can use name of previous pipes in the pipe container, or the special binding `path`, where `path.previousPipe` 
 is the path of the current resource of previous pipe named `previousPipe`
@@ -301,7 +299,7 @@ this use case is for completing repository profiles with external system's data 
         "background": "${json.opt('background')}",
         "about": "${json.opt('about')}",
         "jcr:created": "Fri Jul 03 2015 15:32:22 GMT+0200",
-        "birthday": "${json.opt('birthday') ? moment(json.opt('birthday'), \"MMMM DD\").toDate() : ''}",
+        "birthday": "${(json.opt('birthday') ? moment(json.opt('birthday'), \"MMMM DD\").toDate() : '')}",
         "mobile": "${json.opt('mobile')}"
         }
       }
