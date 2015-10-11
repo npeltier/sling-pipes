@@ -98,7 +98,29 @@
       "three": "3"
     },
     "additionalScripts": ["/content/test/testSum.js"]
+  },
+  "onePipeContainer": {
+    "jcr:primaryType": "nt:unstructured",
+    "jcr:description": "one pipe only",
+    "sling:resourceType": "slingPipes/container",
+    "conf": {
+      "jcr:primaryType": "sling:OrderedFolder",
+      "dummyParent": {
+        "sling:resourceType": "slingPipes/dummySearch",
+        "conf": {
+          "jcr:primaryType": "nt:unstructured",
+          "apple": {
+            "jcr:primaryType": "nt:unstructured",
+            "color": "green",
+            "name": "apple"
+          },
+          "banana": {
+            "jcr:primaryType": "nt:unstructured",
+            "color": "yellow",
+            "name": "banana"
+          }
+        }
+      }
+    }
   }
-
-
 }

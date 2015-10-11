@@ -35,6 +35,7 @@ public class ContainerPipeTest extends AbstractPipeTest {
     public static final String NN_DUMMYTREE = "dummyTree";
     public static final String NN_OTHERTREE = "otherTree";
     public static final String NN_ROTTENTREE = "rottenTree";
+    public static final String NN_ONEPIPE = "onePipeContainer";
 
     @Before
     public void setup() {
@@ -101,5 +102,13 @@ public class ContainerPipeTest extends AbstractPipeTest {
         ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
         Iterator<Resource> resourceIterator = pipe.getOutput();
         assertFalse("There shouldn't be any resource", resourceIterator.hasNext());
+    }
+
+    @Test
+    public void testOnePipe() throws Exception {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_ONEPIPE);
+        ContainerPipe pipe = (ContainerPipe)plumber.getPipe(resource);
+        Iterator<Resource> resourceIterator = pipe.getOutput();
+        assertTrue("There should be children", resourceIterator.hasNext());
     }
 }

@@ -84,6 +84,10 @@ public class ContainerPipe extends BasePipe {
 
     @Override
     public Iterator<Resource> getOutput()  {
+        if (pipeList.size() == 1) {
+            //corner case with only one element: no need to have a container resource iterator
+            return pipeList.iterator().next().getOutput();
+        }
         return new ContainerResourceIterator(this);
     }
 
