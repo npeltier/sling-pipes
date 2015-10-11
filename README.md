@@ -70,6 +70,13 @@ retrieve resources resulting of an xpath query
 outputs the parent resource of input resource
 * `sling:resourceType` is `slingPipes/parent`
 
+#### FilterPipe
+outputs the input resource if its matches its configuration
+* `sling:resourceType` is `slingPipes/filter`
+* `conf` node tree that will be tested against the current input of the pipe, each `/conf/sub@prop=value` will triggers a test
+on `./sub@prop` property of the current input, testing if its value matches `value` regex. If the special `slingPipesFilter_noChildren=${true}`
+property is there with the value instantiated as a true boolean, then filter will pass if corresponding node has no children.
+
 ### containers
 #### Container Pipe
 assemble a sequence of pipes

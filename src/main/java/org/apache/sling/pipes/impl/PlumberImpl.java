@@ -33,6 +33,7 @@ import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.apache.sling.pipes.AuthorizablePipe;
 import org.apache.sling.pipes.BasePipe;
 import org.apache.sling.pipes.ContainerPipe;
+import org.apache.sling.pipes.FilterPipe;
 import org.apache.sling.pipes.PathPipe;
 import org.apache.sling.pipes.JsonPipe;
 import org.apache.sling.pipes.MovePipe;
@@ -48,11 +49,13 @@ import org.apache.sling.pipes.XPathPipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Filter;
 
 /**
  * implements plumber interface, and registers default pipes
@@ -83,6 +86,7 @@ public class PlumberImpl implements Plumber {
         registerPipe(ParentPipe.RESOURCE_TYPE, ParentPipe.class);
         registerPipe(MovePipe.RESOURCE_TYPE, MovePipe.class);
         registerPipe(PathPipe.RESOURCE_TYPE, PathPipe.class);
+        registerPipe(FilterPipe.RESOURCE_TYPE, FilterPipe.class);
     }
 
     @Override
