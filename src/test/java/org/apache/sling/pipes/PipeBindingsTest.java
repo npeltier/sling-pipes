@@ -40,6 +40,22 @@ public class PipeBindingsTest extends AbstractPipeTest {
     }
 
     @Test
+    public void computeEcma5Expression() {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + ContainerPipeTest.NN_DUMMYTREE);
+        PipeBindings bindings = new PipeBindings(resource);
+        Map<String,String> expressions = new HashMap<>();
+        expressions.put("blah ${blah} blah", "'blah ' + blah + ' blah'");
+        expressions.put("${blah}", "blah");
+        expressions.put("${blah} blah", "blah + ' blah'");
+        expressions.put("blah ${blah}", "'blah ' + blah");
+        expressions.put("${blah}${blah}", "blah + '' + blah");
+        expressions.put("+[${blah}]", "'+[' + blah + ']'");
+        for (Map.Entry<String,String> test : expressions.entrySet()){
+            assertEquals(test.getKey() + " should be transformed in " + test.getValue(), test.getValue(), bindings.computeECMA5Expression(test.getKey()));
+        }
+    }
+
+    @Test
     public void testInstantiateExpression() throws Exception {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + ContainerPipeTest.NN_DUMMYTREE);
         PipeBindings bindings = new PipeBindings(resource);
@@ -47,7 +63,7 @@ public class PipeBindingsTest extends AbstractPipeTest {
         testMap.put("a", "apricots");
         testMap.put("b", "bananas");
         bindings.getBindings().put("test", testMap);
-        String newExpression = bindings.instantiateExpression("test.a + ' and ' + test.b");
+        String newExpression = bindings.instantiateExpression("${test.a} and ${test.b}");
         assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
     }
 
@@ -59,9 +75,9 @@ public class PipeBindingsTest extends AbstractPipeTest {
         testMap.put("a", "apricots");
         testMap.put("b", "bananas");
         bindings.getBindings().put("test", testMap);
-        String newExpression = (String)bindings.instantiateObject("test.a + ' and ' + test.b");
+        String newExpression = (String)bindings.instantiateObject("${test.a} and ${test.b}");
         assertEquals("expression should be correctly instantiated", "apricots and bananas", newExpression);
-        Calendar cal = (Calendar)bindings.instantiateObject("new Date(2012,04,12)");
+        Calendar cal = (Calendar)bindings.instantiateObject("${new Date(2012,04,12)}");
         assertNotNull("calendar should be instantiated", cal);
         assertEquals("year should be correct", 2012, cal.get(Calendar.YEAR));
         assertEquals("month should be correct", 4, cal.get(Calendar.MONTH));
@@ -72,7 +88,7 @@ public class PipeBindingsTest extends AbstractPipeTest {
     public void testAdditionalBindings() throws Exception {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
         PipeBindings bindings = new PipeBindings(resource);
-        String expression = bindings.instantiateExpression("three");
+        String expression = bindings.instantiateExpression("${three}");
         assertEquals("computed expression should be taking additional bindings 'three' in account", "3", expression);
     }
 
@@ -81,7 +97,7 @@ public class PipeBindingsTest extends AbstractPipeTest {
         context.load().binaryFile("/testSum.js", "/content/test/testSum.js");
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
         PipeBindings bindings = new PipeBindings(resource);
-        Object expression = bindings.instantiateObject("testSumFunction(1,2)");
+        Object expression = bindings.instantiateObject("${testSumFunction(1,2)}");
         assertEquals("computed expression have testSum script's functionavailable", 3, expression);
     }
 }

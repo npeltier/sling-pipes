@@ -34,7 +34,8 @@ import java.util.List;
 public class BasePipe implements Pipe {
     Logger logger = LoggerFactory.getLogger(BasePipe.class);
     public static final String RESOURCE_TYPE = "slingPipes/base";
-    protected static final String DRYRUN = "dryRun";
+    protected static final String DRYRUN_KEY = "dryRun";
+    protected static final String DRYRUN_EXPR = "${" + DRYRUN_KEY + "}";
 
     protected ResourceResolver resolver;
     protected ValueMap properties;
@@ -75,7 +76,7 @@ public class BasePipe implements Pipe {
 
     public boolean isDryRun() {
         if (dryRunObject == null) {
-            Object run =  bindings.isBindingDefined(DRYRUN) ? bindings.instantiateObject(DRYRUN) : false;
+            Object run =  bindings.isBindingDefined(DRYRUN_KEY) ? bindings.instantiateObject(DRYRUN_EXPR) : false;
             dryRunObject =  run != null && run instanceof Boolean ? (Boolean)run : false;
         }
         boolean dryRun = dryRunObject != null ? dryRunObject : false;

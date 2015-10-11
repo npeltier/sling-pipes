@@ -127,7 +127,7 @@ public class PlumberServletTest  extends AbstractPipeTest {
         String bindingValue = "testBindingValue";
         String pathLengthParam = "pathLength";
         JSONObject bindings = new JSONObject("{'" + testBinding + "':'" + bindingValue + "'}");
-        JSONObject respObject = new JSONObject("{'" + pathLengthParam + "':'path.get(\"dummyGrandChild\").length','" + testBindingLength + "':'" + testBinding + ".length'}");
+        JSONObject respObject = new JSONObject("{'" + pathLengthParam + "':'${path.get(\"dummyGrandChild\").length}','" + testBindingLength + "':'${" + testBinding + ".length}'}");
         SlingHttpServletRequest request =
                 mockPlumberServletRequest(context.resourceResolver(), dummyTreePath, null, bindings.toString(), respObject.toString(), null);
         servlet.execute(request, response, false);
@@ -175,7 +175,7 @@ public class PlumberServletTest  extends AbstractPipeTest {
         when(request.getParameter(PlumberServlet.PARAM_PATH)).thenReturn(pathParam);
         when(request.getParameter(PlumberServlet.PARAM_BINDINGS)).thenReturn(bindings);
         when(request.getParameter(PlumberServlet.PARAM_WRITER)).thenReturn(writer);
-        when(request.getParameter(BasePipe.DRYRUN)).thenReturn(dryRun);
+        when(request.getParameter(BasePipe.DRYRUN_KEY)).thenReturn(dryRun);
         return request;
     }
 

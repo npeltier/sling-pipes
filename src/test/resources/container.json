@@ -5,7 +5,7 @@
     "jcr:description":"2 parents, 2 kids, 1 grand kid: we expect exactly 4 outputs",
     "sling:resourceType":"slingPipes/container",
     "conf":{
-      "jcr:primaryType":"sling:Folder",
+      "jcr:primaryType":"sling:OrderedFolder",
       "dummyParent":{
         "sling:resourceType":"slingPipes/dummySearch",
         "conf":{
@@ -24,7 +24,7 @@
       },
       "dummyGrandChild": {
         "sling:resourceType":"slingPipes/base",
-        "path":"'/content/fruits/' + dummyParent.name + '/isnota/' + dummyChild.name + '/' + (dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')"
+        "path":"/content/fruits/${dummyParent.name}/isnota/${dummyChild.name}/${(dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')}"
       }
     }
   },
@@ -33,7 +33,7 @@
     "sling:resourceType":"slingPipes/container",
     "jcr:description":"2 parents, 1 kid, 1 grand kid: we expect exactly 2 outputs",
     "conf":{
-      "jcr:primaryType":"sling:Folder",
+      "jcr:primaryType":"sling:OrderedFolder",
       "dummyParent":{
         "sling:resourceType":"slingPipes/dummySearch",
         "conf":{
@@ -51,7 +51,7 @@
       },
       "dummyGrandChild": {
         "sling:resourceType":"slingPipes/base",
-        "path":"'/content/fruits/' + dummyParent.name + '/isnota/' + dummyChild.name + '/' + (dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')"
+        "path":"/content/fruits/${dummyParent.name}/isnota/${dummyChild.name}/${(dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')}"
       }
     }
   },
@@ -60,7 +60,7 @@
     "sling:resourceType":"slingPipes/container",
     "jcr:description":"2 parents, 1 null, 1 grand kid: we expect nothing, but no failure!",
     "conf":{
-      "jcr:primaryType":"sling:Folder",
+      "jcr:primaryType":"sling:OrderedFolder",
       "dummyParent":{
         "sling:resourceType":"slingPipes/dummySearch",
         "conf":{
@@ -74,7 +74,7 @@
       },
       "dummyGrandChild": {
         "sling:resourceType":"slingPipes/base",
-        "path":"'/content/fruits/' + dummyParent.name + '/isnota/' + dummyChild.name + '/' + (dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')"
+        "path":"/content/fruits/${dummyParent.name}/isnota/${dummyChild.name }/${(dummyParent.color == dummyChild.color ? '/buttheyhavesamecolor' : '/andtheircolorisdifferent')}"
       }
     }
   },
@@ -83,7 +83,7 @@
     "sling:resourceType":"slingPipes/container",
     "jcr:description":"1 parent, additional bindings",
     "conf":{
-      "jcr:primaryType":"sling:Folder",
+      "jcr:primaryType":"sling:OrderedFolder",
       "dummyParent":{
         "sling:resourceType":"slingPipes/dummySearch",
         "conf":{

@@ -114,9 +114,8 @@ public class WritePipe extends BasePipe {
                         //removing the property if it exists
                         Resource propertyResource = resource.getChild(key);
                         if (propertyResource != null) {
-                            if (isDryRun()){
-                                logger.info("[dryrun] removing {}", propertyResource.getPath());
-                            } else {
+                            logger.info("removing {}", propertyResource.getPath());
+                            if (!isDryRun()){
                                 Property property = propertyResource.adaptTo(Property.class);
                                 if (property != null) {
                                     property.remove();
@@ -124,9 +123,8 @@ public class WritePipe extends BasePipe {
                             }
                         }
                     } else {
-                        if (isDryRun()){
-                            logger.info("[dryrun] writing {}={}",target.getPath() + "@" + key, value);
-                        } else {
+                        logger.info("writing {}={}",target.getPath() + "@" + key, value);
+                        if (!isDryRun()){
                             properties.put(key, value);
                         }
                     }
@@ -148,9 +146,8 @@ public class WritePipe extends BasePipe {
             while (childrenConf.hasNext()){
                 Node childConf = childrenConf.nextNode();
                 String name = childConf.getName();
-                if (isDryRun()){
-                    logger.info("[dryrun] dubbing {} at {}", conf.getPath(), target.getPath());
-                } else {
+                logger.info("dubbing {} at {}", conf.getPath(), target.getPath());
+                if (!isDryRun()){
                     Node childTarget = targetNode.hasNode(name) ? targetNode.getNode(name) : targetNode.addNode(name, childConf.getPrimaryNodeType().getName());
                     writeTree(childConf, resolver.getResource(childTarget.getPath()));
                 }

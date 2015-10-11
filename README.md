@@ -124,7 +124,7 @@ get or create path given in expression
 * `autosave` should save at each creation (will make things slow, but sometimes you don't have choice)
 
 ## Making configuration dynamic with pipe bindings
-in order to make things interesting, most of the configurations are javascript expressions, hence valid js expressions 
+in order to make things interesting, most of the configurations are javascript template strings, hence valid js expressions 
 reusing bindings (from configuration, or other pipes).
 
 Following configurations are evaluated:
@@ -179,7 +179,7 @@ pipe.
 e.g.
 
 ```
-curl -u admin:admin http://localhost:4502/etc/pipes/users.json?writer={"user":"'user.fullName'"}
+curl -u admin:admin http://localhost:4502/etc/pipes/users.json?writer={"user":"${user.fullName}"}
 ```
 
 will returns something similar to
@@ -203,14 +203,14 @@ this pipe parse all profile nodes, and
   "conf":{
     "profile": {
         "sling:resourceType":"slingPipes/slingQuery",
-        "expr":"'nt:unstructured#profile'",
-        "path":"'/home/users'"
+        "expr":"nt:unstructured#profile",
+        "path":"/home/users"
     },
     "writeFullName": {       
         "sling:resourceType":"slingPipes/write",
         "conf": {
-            "fullName":"profile.gender === 'female' ? 'Ms ' + profile.fullName : 'Mr ' + profile.fullName",
-            "'generatedBy'":"'slingPipes'"
+            "fullName":"${(profile.gender === 'female' ? 'Ms ' + profile.fullName : 'Mr ' + profile.fullName)}",
+            "generatedBy":"slingPipes"
         }
     }
   }
@@ -229,14 +229,14 @@ this pipe parse all profile nodes, and
     "badge": {
       "jcr:primaryType": "sling:Folder",
       "jcr:description": "outputs all badge component resources",
-      "expr": "'[sling:resourceType=myApp/components/badge]'",
-      "path": "'/etc/badges/badges-admin/jcr:content'",
+      "expr": "[sling:resourceType=myApp/components/badge]",
+      "path": "/etc/badges/badges-admin/jcr:content",
       "sling:resourceType": "slingPipes/slingQuery"
       },
     "profile": {
       "jcr:primaryType": "sling:Folder",
       "jcr:description": "retrieve all user ids from a mv property",
-      "path": "path.badge + '/profiles'",
+      "path": "${path.badge}/profiles",
       "sling:resourceType": "slingPipes/multiProperty"
       },
     "user": {
@@ -248,11 +248,11 @@ this pipe parse all profile nodes, and
     "write": {
       "jcr:primaryType": "sling:OrderedFolder",
       "jcr:descritption": "patches the badge path to the badges property of the user profile"
-      "path": "path.user + '/profile'",
+      "path": "${path.user}/profile",
       "sling:resourceType": "slingPipes/write",
       "conf": {
         "jcr:primaryType": "nt:unstructured",
-        "'badges'": "'+[' + path.badge + ']'"
+        "badges": "+[${path.badge}]"
         }
       }
     }
@@ -273,13 +273,13 @@ this use case is for completing repository profiles with external system's data 
     "jcr:primaryType": "sling:OrderedFolder",
     "profile": {
       "jcr:primaryType": "sling:OrderedFolder",
-      "expr": "'/jcr:root/home/users//element(profile,nt:unstructured)[@uid]'",
+      "expr": "/jcr:root/home/users//element(profile,nt:unstructured)[@uid]",
       "jcr:description": "query all user profile nodes",
       "sling:resourceType": "slingPipes/xpath"
       },
     "json": {
       "jcr:primaryType": "sling:OrderedFolder",
-      "expr": "profile.uid ? 'https://my.external.system.corp.com/profiles/' + profile.uid.substr(0,2) + '/' + profile.uid + '.json' : ''",
+      "expr": "${(profile.uid ? 'https://my.external.system.corp.com/profiles/' + profile.uid.substr(0,2) + '/' + profile.uid + '.json' : '')",
       "jcr:description": "retrieves json information relative to the given profile, if the uid is not found, expr is empty: the pipe will do nothing",
       "sling:resourceType": "slingPipes/json"
       },
@@ -291,15 +291,11 @@ this use case is for completing repository profiles with external system's data 
       "conf": {
         "jcr:primaryType": "sling:OrderedFolder",
         "jcr:createdBy": "admin",
-        "'background'": "json.opt('background')",
-        "'about'": "json.opt('about')",
+        "background": "${json.opt('background')}",
+        "about": "${json.opt('about')}",
         "jcr:created": "Fri Jul 03 2015 15:32:22 GMT+0200",
-        "'birthday'": "json.opt('birthday') ? moment(json.opt('birthday'), \"MMMM DD\").toDate() : ''",
-        "'mobile'": "json.opt('mobile')",
-        "'connectRooms'": "json.opt('connectRooms')",
-        "'interests'": "json.opt('interests')",
-        "'volunteer'": "json.opt('volunteer')",
-        "'status'": "json.opt('status')"
+        "birthday": "${json.opt('birthday') ? moment(json.opt('birthday'), \"MMMM DD\").toDate() : ''}",
+        "mobile": "${json.opt('mobile')}"
         }
       }
     }
@@ -316,16 +312,18 @@ this use case is for completing repository profiles with external system's data 
     "jcr:primaryType": "sling:OrderedFolder",
     "profile": {
       "jcr:primaryType": "sling:OrderedFolder",
-      "expr": "'/jcr:root/home/users//element(profile,nt:unstructured)[@bad]'",
+      "expr": "/jcr:root/home/users//element(profile,nt:unstructured)[@bad]",
       "jcr:description": "query all user profile nodes with bad properties",
       "sling:resourceType": "slingPipes/xpath"
       },
     "parent": {
       "jcr:primaryType": "sling:OrderedFolder",
+      "jcr:description": "get the parent node (user node)",
       "sling:resourceType": "slingPipes/parent"
       },
     "rm": {
       "jcr:primaryType": "sling:OrderedFolder",
+      "jcr:description": "remove it",
       "sling:resourceType": "slingPipes/rm",
       }
    }
