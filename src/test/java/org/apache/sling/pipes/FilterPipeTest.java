@@ -32,6 +32,8 @@ public class FilterPipeTest extends AbstractPipeTest {
     public static final String NN_PROPERTIES = "properties";
     public static final String NN_NOCHILDREN = "noChildrenPasses";
     public static final String NN_NOCHILDREN_FAILS = "noChildrenVoid";
+    public static final String NN_TEST = "testPasses";
+    public static final String NN_TEST_FAILS = "testFails";
     public void setup() {
         super.setup();
         context.load().json("/filter.json", PATH_PIPE);
@@ -63,6 +65,22 @@ public class FilterPipeTest extends AbstractPipeTest {
     @Test
     public void testNoChildrenFails(){
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_NOCHILDREN_FAILS);
+        Pipe pipe = plumber.getPipe(resource);
+        Iterator<Resource> resourceIterator = pipe.getOutput();
+        assertFalse("output has no resource...", resourceIterator.hasNext());
+    }
+
+    @Test
+    public void testTestPasses() {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_TEST);
+        Pipe pipe = plumber.getPipe(resource);
+        Iterator<Resource> resourceIterator = pipe.getOutput();
+        assertTrue("output has one resource...", resourceIterator.hasNext());
+    }
+
+    @Test
+    public void testTestFails() {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_TEST_FAILS);
         Pipe pipe = plumber.getPipe(resource);
         Iterator<Resource> resourceIterator = pipe.getOutput();
         assertFalse("output has no resource...", resourceIterator.hasNext());

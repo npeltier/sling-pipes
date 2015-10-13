@@ -35,12 +35,18 @@ public class FilterPipe extends BasePipe {
     public static final String RESOURCE_TYPE = "slingPipes/filter";
     public static final String PREFIX_FILTER = "slingPipesFilter_";
     public static final String PN_NOCHILDREN = PREFIX_FILTER + "noChildren";
+    public static final String PN_TEST = PREFIX_FILTER + "test";
 
     public FilterPipe(Plumber plumber, Resource resource) throws Exception {
         super(plumber, resource);
     }
 
     boolean propertiesPass(ValueMap current, ValueMap filter){
+        if (filter.containsKey(PN_TEST)){
+            if (!(Boolean) bindings.instantiateObject(filter.get(PN_TEST, "${false}"))){
+                return false;
+            }
+        }
         for (String key : filter.keySet()){
             if (! IGNORED_PROPERTIES.contains(key) && !key.startsWith(PREFIX_FILTER)){
                 Pattern pattern = Pattern.compile(filter.get(key, String.class));
@@ -83,8 +89,14 @@ public class FilterPipe extends BasePipe {
 
     @Override
     public Iterator<Resource> getOutput() {
-        if (filterPasses(getInput(), getConfiguration())){
-            return super.getOutput();
+        Resource resource = getInput();
+        if (resource != null){
+            if (filterPasses(resource, getConfiguration())){
+                logger.debug("filter passes for {}", resource.getPath());
+                return super.getOutput();
+            } else {
+                logger.info("{} got filtered out", resource.getPath());
+            }
         }
         return Collections.emptyIterator();
     }
