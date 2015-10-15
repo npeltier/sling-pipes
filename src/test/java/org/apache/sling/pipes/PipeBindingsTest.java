@@ -98,6 +98,6 @@ public class PipeBindingsTest extends AbstractPipeTest {
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
         PipeBindings bindings = new PipeBindings(resource);
         Object expression = bindings.instantiateObject("${testSumFunction(1,2)}");
-        assertEquals("computed expression have testSum script's functionavailable", 3, expression);
+        assertEquals("computed expression have testSum script's functionavailable", 3L, expression);
     }
 }
