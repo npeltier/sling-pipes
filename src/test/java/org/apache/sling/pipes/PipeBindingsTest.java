@@ -97,7 +97,7 @@ public class PipeBindingsTest extends AbstractPipeTest {
         context.load().binaryFile("/testSum.js", "/content/test/testSum.js");
         Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + NN_MOREBINDINGS);
         PipeBindings bindings = new PipeBindings(resource);
-        Object expression = bindings.instantiateObject("${testSumFunction(1,2)}");
-        assertEquals("computed expression have testSum script's functionavailable", 3L, expression);
+        Number expression = (Number)bindings.instantiateObject("${testSumFunction(1,2)}");
+        assertEquals("computed expression have testSum script's functionavailable", 3, expression.intValue());
     }
 }
