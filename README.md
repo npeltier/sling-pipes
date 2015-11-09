@@ -170,7 +170,7 @@ e.g.
 will returns something like
 
 ```
-["/one/output/resource", "another/one"]
+{"size":2, "items":["/one/output/resource", "another/one"]}
 ```
 
 ### Request Parameter `writer`
@@ -190,11 +190,14 @@ curl -u admin:admin http://localhost:4502/etc/pipes/users.json?writer={"user":"$
 will returns something similar to
  
 ```
-[{'user':'John Smith','path':'/home/users/q/q123jk1UAZS'},{'user':'John Doe','path':'/home/users/q/q153jk1UAZS'}]
+{"size":2, "items":[{'user':'John Smith','path':'/home/users/q/q123jk1UAZS'},{'user':'John Doe','path':'/home/users/q/q153jk1UAZS'}]}
 ```
 
 ### Request Parameter `dryRun`
 if parameter dryRun is set to true, and the executed pipe is supposed to modify content, it will log (at best it can) the change it *would* have done, without doing anything
+
+### Request Parameter `size`
+default response is truncated to 10 items, if you need more (or less), you can modify that settings with the size parameter
 
 ## sample configurations 
 
