@@ -16,7 +16,6 @@
  */
 package org.apache.sling.pipes;
 
-import junit.framework.Assert;
 import org.apache.sling.api.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
