@@ -192,7 +192,7 @@ public class PipeBindings {
      * @return
      * @throws ScriptException
      */
-    private Object evaluate(String expr) throws ScriptException {
+    protected Object evaluate(String expr) throws ScriptException {
         return engine.eval(computeECMA5Expression(expr), scriptContext);
     }
 

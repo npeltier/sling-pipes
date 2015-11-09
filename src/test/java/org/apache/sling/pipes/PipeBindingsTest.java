@@ -16,10 +16,12 @@
  */
 package org.apache.sling.pipes;
 
+import junit.framework.Assert;
 import org.apache.sling.api.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.script.ScriptException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,15 @@ public class PipeBindingsTest extends AbstractPipeTest {
     public void setup() {
         super.setup();
         context.load().json("/container.json", PATH_PIPE);
+    }
+
+    @Test
+    public void evaluateSimpleString() throws ScriptException {
+        Resource resource = context.resourceResolver().getResource(PATH_PIPE + "/" + ContainerPipeTest.NN_DUMMYTREE);
+        PipeBindings bindings = new PipeBindings(resource);
+        String simple = "simple string";
+        String evaluated = (String)bindings.evaluate(simple);
+        assertEquals("evaluated should be the same than input", evaluated, simple);
     }
 
     @Test
